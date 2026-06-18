@@ -14,11 +14,13 @@ const NAV = [
   { to: '/sales', label: 'Sales', icon: '🧾', perm: 'canCreateInvoice' },
   { to: '/purchases', label: 'Purchases', icon: '🛒', perm: 'canAddPurchase' },
   { to: '/reports/sales', label: 'Reports', icon: '📊', perm: 'canViewSalesReport' },
+  { to: '/employees', label: 'Employees', icon: '👨‍💼', roles: ['owner', 'admin'] },
 ];
 
-function canAccess(user, perm) {
-  if (!perm) return true;
+function canAccess(user, perm, roles) {
   if (!user) return false;
+  if (roles) return roles.includes(user.role);
+  if (!perm) return true;
   if (user.role === 'owner' || user.role === 'admin') return true;
   return !!user.permissions?.[perm];
 }
@@ -58,8 +60,8 @@ export default function Sidebar() {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
-        {NAV.map(({ to, label, icon, perm }) => {
-          if (!canAccess(user, perm)) return null;
+        {NAV.map(({ to, label, icon, perm, roles }) => {
+          if (!canAccess(user, perm, roles)) return null;
           return (
             <NavLink key={to} to={to} style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',

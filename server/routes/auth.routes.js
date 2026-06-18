@@ -17,7 +17,6 @@ const validateLogin = [
 
 router.post('/register', validateRegister, ctrl.register);
 router.post('/login', validateLogin, ctrl.login);
-router.post('/refresh', ctrl.refresh);
 router.post('/logout', ctrl.logout);
 router.post('/forgot-password', body('email').isEmail(), ctrl.forgotPassword);
 router.post('/reset-password/:token', body('password').isLength({ min: 6 }), ctrl.resetPassword);

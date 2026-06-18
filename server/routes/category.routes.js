@@ -2,17 +2,20 @@ const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/authenticate');
 const checkPermission = require('../middleware/checkPermission');
+const { uploadFor } = require('../middleware/upload');
 const ctrl = require('../controllers/category.controller');
 
-router.use(authenticate);
-router.get('/categories', ctrl.getCategories);
-router.post('/categories', checkPermission('canAddCategory'), ctrl.createCategory);
-router.patch('/categories/:id', checkPermission('canAddCategory'), ctrl.updateCategory);
-router.delete('/categories/:id', checkPermission('canAddCategory'), ctrl.deleteCategory);
+router.get('/categories', authenticate, ctrl.getCategories);
+router.post('/categories', authenticate, checkPermission('canAddCategory'), ...uploadFor('categories'), ctrl.createCategory);
+router.put('/categories/:id', authenticate, checkPermission('canAddCategory'), ...uploadFor('categories'), ctrl.updateCategory);
+router.patch('/categories/:id', authenticate, checkPermission('canAddCategory'), ...uploadFor('categories'), ctrl.updateCategory);
+router.delete('/categories/:id', authenticate, checkPermission('canAddCategory'), ctrl.deleteCategory);
 
-router.get('/subcategories', ctrl.getSubcategories);
-router.post('/subcategories', checkPermission('canAddCategory'), ctrl.createSubcategory);
-router.patch('/subcategories/:id', checkPermission('canAddCategory'), ctrl.updateSubcategory);
-router.delete('/subcategories/:id', checkPermission('canAddCategory'), ctrl.deleteSubcategory);
+router.get('/subcategories', authenticate, ctrl.getSubcategories);
+router.get('/subcategories/category/:categoryId', authenticate, ctrl.getSubcategoriesByCategory);
+router.post('/subcategories', authenticate, checkPermission('canAddCategory'), ...uploadFor('subcategories'), ctrl.createSubcategory);
+router.put('/subcategories/:id', authenticate, checkPermission('canAddCategory'), ...uploadFor('subcategories'), ctrl.updateSubcategory);
+router.patch('/subcategories/:id', authenticate, checkPermission('canAddCategory'), ...uploadFor('subcategories'), ctrl.updateSubcategory);
+router.delete('/subcategories/:id', authenticate, checkPermission('canAddCategory'), ctrl.deleteSubcategory);
 
 module.exports = router;

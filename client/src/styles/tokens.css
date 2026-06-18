@@ -14,6 +14,10 @@
   --esp-text-secondary: #475569;
   --esp-text-muted: #94A3B8;
 
+  --esp-success-light: #dcfce7;
+  --esp-danger-light: #fee2e2;
+  --esp-warning-light: #fef3c7;
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
