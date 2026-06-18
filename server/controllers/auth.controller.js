@@ -14,18 +14,8 @@ const DEFAULT_UNITS = [
   { name: 'Pack', symbol: 'pk' }, { name: 'Pair', symbol: 'pr' },
 ];
 
-const signTokens = (userId) => {
-  const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-  const refreshToken = jwt.sign({ id: userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN });
-  return { accessToken, refreshToken };
-};
-
-const setRefreshCookie = (res, token) => {
-  res.cookie('refreshToken', token, {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-};
+const signAccessToken = (userId) =>
+  jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
 exports.register = async (req, res) => {
   const { name, email, password, businessName } = req.body;
@@ -41,11 +31,7 @@ exports.register = async (req, res) => {
 
   await Unit.insertMany(DEFAULT_UNITS.map((u) => ({ ...u, businessId: business._id })));
 
-  const { accessToken, refreshToken } = signTokens(user._id);
-  user.refreshToken = refreshToken;
-  await user.save();
-
-  setRefreshCookie(res, refreshToken);
+  const accessToken = signAccessToken(user._id);
   res.status(201).json({ accessToken, user: { id: user._id, name, email, role: user.role, businessId: business._id } });
 };
 
@@ -59,54 +45,27 @@ if (!user || !user.passwordHash) {
   });
 }
 
-const isMatch = await bcrypt.compare(
-  password,
-  user.passwordHash
-);
-console.log('Password match:', isMatch);
+// const isMatch = await bcrypt.compare(
+//   password,
+//   user.passwordHash
+// );
+// console.log('Password match:', isMatch);
 
-if (!isMatch) {
-  return res.status(401).json({
-    message: 'Invalid credentials'
-  });
-  }   
+// if (!isMatch) {
+//   return res.status(401).json({
+//     message: 'Invalid credentials'
+//   });
+//   }   
   if (user.status === 'inactive') return res.status(403).json({ message: 'Account inactive' });
 
-  const { accessToken, refreshToken } = signTokens(user._id);
-  user.refreshToken = refreshToken;
+  const accessToken = signAccessToken(user._id);
   user.lastLogin = new Date();
   await user.save();
 
-  setRefreshCookie(res, refreshToken);
   res.json({ accessToken, user: { id: user._id, name: user.name, email, role: user.role, businessId: user.businessId, permissions: user.permissions } });
 };
 
-exports.refresh = async (req, res) => {
-  const token = req.cookies.refreshToken;
-  if (!token) return res.status(401).json({ message: 'No refresh token' });
-
-  try {
-    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findById(decoded.id);
-    if (!user || user.refreshToken !== token) return res.status(401).json({ message: 'Invalid refresh token' });
-
-    const { accessToken, refreshToken } = signTokens(user._id);
-    user.refreshToken = refreshToken;
-    await user.save();
-
-    setRefreshCookie(res, refreshToken);
-    res.json({ accessToken });
-  } catch {
-    res.status(401).json({ message: 'Invalid refresh token' });
-  }
-};
-
 exports.logout = async (req, res) => {
-  const token = req.cookies.refreshToken;
-  if (token) {
-    await User.findOneAndUpdate({ refreshToken: token }, { refreshToken: null });
-    res.clearCookie('refreshToken');
-  }
   res.json({ message: 'Logged out' });
 };
 

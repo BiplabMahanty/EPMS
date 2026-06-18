@@ -1,0 +1,25 @@
+const express = require('express');
+const router = express.Router();
+const ctrl = require('../controllers/employeeAdmin.controller');
+const empCtrl = require('../controllers/employee.controller');
+const authenticate = require('../middleware/authenticate');
+const authorize = require('../middleware/authorize');
+const authenticateEmployee = require('../middleware/authenticateEmployee');
+const { uploadFor } = require('../middleware/upload');
+
+// Admin management of employees
+router.use('/manage', authenticate, authorize('owner', 'admin'));
+router.get('/manage', ctrl.list);
+router.get('/manage/:id', ctrl.get);
+router.post('/manage', ...uploadFor('employees'), ctrl.create);
+router.patch('/manage/:id', ...uploadFor('employees'), ctrl.update);
+router.put('/manage/:id', ...uploadFor('employees'), ctrl.update);
+router.delete('/manage/:id', ctrl.remove);
+router.post('/manage/:id/reset-password', ctrl.resetPassword);
+
+// Employee self-service attendance (uses employee token)
+router.post('/attendance/checkin', authenticateEmployee, ctrl.checkIn);
+router.post('/attendance/checkout', authenticateEmployee, ctrl.checkOut);
+router.get('/attendance/history', authenticateEmployee, ctrl.attendanceHistory);
+
+module.exports = router;

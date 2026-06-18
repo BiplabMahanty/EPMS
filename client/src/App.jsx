@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './routes/ProtectedRoute';
+import EmployeeRoute from './routes/EmployeeRoute';
 import './styles/global.css';
 import './styles/components.css';
 
@@ -29,9 +30,16 @@ const TaxSettings = lazy(() => import('./pages/settings/TaxSettings'));
 const UnitsSettings = lazy(() => import('./pages/settings/UnitsSettings'));
 const UsersSettings = lazy(() => import('./pages/settings/UsersSettings'));
 const SyncSettings = lazy(() => import('./pages/settings/SyncSettings'));
+const Employees = lazy(() => import('./pages/employees/Employees'));
+
+// Employee Portal
+const EmployeeLogin = lazy(() => import('./pages/employee/EmployeeLogin'));
+const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'));
+const EmployeeOrders = lazy(() => import('./pages/employee/EmployeeOrders'));
+const EmployeeProfile = lazy(() => import('./pages/employee/EmployeeProfile'));
+const EmployeeAttendance = lazy(() => import('./pages/employee/EmployeeAttendance'));
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30000 } } });
-
 const Loading = () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--esp-text-muted)' }}>Loading…</div>;
 
 export default function App() {
@@ -41,11 +49,13 @@ export default function App() {
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
         <Suspense fallback={<Loading />}>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/employee-login" element={<EmployeeLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
+            {/* Admin / Owner Routes */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
             <Route path="/products/new" element={<ProtectedRoute permission="canAddProduct"><ProductForm /></ProtectedRoute>} />
@@ -63,13 +73,20 @@ export default function App() {
             <Route path="/purchases/:id" element={<ProtectedRoute><PurchaseForm /></ProtectedRoute>} />
             <Route path="/reports/sales" element={<ProtectedRoute permission="canViewSalesReport"><SalesReport /></ProtectedRoute>} />
             <Route path="/reports/purchases" element={<ProtectedRoute permission="canViewPurchaseReport"><PurchaseReport /></ProtectedRoute>} />
-            <Route path="/reports/stock" element={<ProtectedRoute roles={['owner','admin']}><StockReport /></ProtectedRoute>} />
-            <Route path="/reports/pnl" element={<ProtectedRoute roles={['owner','admin']}><PnLReport /></ProtectedRoute>} />
+            <Route path="/reports/stock" element={<ProtectedRoute roles={['owner', 'admin']}><StockReport /></ProtectedRoute>} />
+            <Route path="/reports/pnl" element={<ProtectedRoute roles={['owner', 'admin']}><PnLReport /></ProtectedRoute>} />
             <Route path="/settings/business" element={<ProtectedRoute><BusinessSettings /></ProtectedRoute>} />
-            <Route path="/settings/tax" element={<ProtectedRoute roles={['owner','admin']}><TaxSettings /></ProtectedRoute>} />
+            <Route path="/settings/tax" element={<ProtectedRoute roles={['owner', 'admin']}><TaxSettings /></ProtectedRoute>} />
             <Route path="/settings/units" element={<ProtectedRoute><UnitsSettings /></ProtectedRoute>} />
-            <Route path="/settings/users" element={<ProtectedRoute roles={['owner','admin']}><UsersSettings /></ProtectedRoute>} />
+            <Route path="/settings/users" element={<ProtectedRoute roles={['owner', 'admin']}><UsersSettings /></ProtectedRoute>} />
             <Route path="/settings/sync" element={<ProtectedRoute><SyncSettings /></ProtectedRoute>} />
+            <Route path="/employees" element={<ProtectedRoute roles={['owner', 'admin']}><Employees /></ProtectedRoute>} />
+
+            {/* Employee Portal */}
+            <Route path="/employee/dashboard" element={<EmployeeRoute><EmployeeDashboard /></EmployeeRoute>} />
+            <Route path="/employee/orders" element={<EmployeeRoute><EmployeeOrders /></EmployeeRoute>} />
+            <Route path="/employee/profile" element={<EmployeeRoute><EmployeeProfile /></EmployeeRoute>} />
+            <Route path="/employee/attendance" element={<EmployeeRoute><EmployeeAttendance /></EmployeeRoute>} />
           </Routes>
         </Suspense>
       </BrowserRouter>

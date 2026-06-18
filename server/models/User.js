@@ -15,16 +15,19 @@ const permissionsSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ['owner', 'admin', 'employee'], default: 'employee' },
   businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business' },
   permissions: { type: permissionsSchema, default: () => ({}) },
+  photo: String,
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   lastLogin: Date,
-  refreshToken: String,
   resetPasswordToken: String,
   resetPasswordExpiry: Date,
 }, { timestamps: true });
+
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ businessId: 1 });
 
 module.exports = mongoose.model('User', userSchema);
