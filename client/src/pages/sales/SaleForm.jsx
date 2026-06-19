@@ -111,10 +111,12 @@ function ProductCard({ product, onAdd, onOpen }) {
   const discount = getDiscountPercent(product);
 
   return (
-    <button
-      type="button"
+    <div
       className="pos-product-card"
+      role="button"
+      tabIndex={0}
       onClick={() => onOpen(product)}
+      onKeyDown={(e) => e.key === "Enter" && onOpen(product)}
     >
       <div className="pos-product-media">
         {!!discount && <span className="pos-discount">-{discount}%</span>}
@@ -140,7 +142,7 @@ function ProductCard({ product, onAdd, onOpen }) {
           + Add
         </button>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -1418,11 +1420,11 @@ const POS_STYLES = `
   .pos-sub-chip.active { background: var(--pos-purple); color: #fff; border-color: var(--pos-purple); }
 .pos-products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
   gap: 6px;
 }  .pos-product-card {
     min-width: 0; border: 1px solid var(--pos-border); background: var(--pos-card); color: var(--pos-text);
-    border-radius: 8px; overflow: hidden; text-align: left; display: flex; flex-direction: column;
+    border-radius: 8px; overflow: hidden; text-align: left; display: flex; flex-direction: column; cursor: pointer;
   }
   .pos-product-card:hover { border-color: var(--pos-primary); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); }
 .pos-product-media {
@@ -1435,16 +1437,16 @@ const POS_STYLES = `
   .pos-image-fallback { display: grid; place-items: center; color: var(--pos-primary); font-weight: 800; font-size: 22px; background: linear-gradient(135deg, #e0f2fe, #eef2ff); }
   .pos-discount { position: absolute; top: 8px; left: 8px; z-index: 2; background: var(--pos-danger); color: #fff; padding: 3px 7px; border-radius: 999px; font-size: 11px; font-weight: 800; }
   .pos-product-body { padding: 10px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
-  .pos-sku { color: var(--pos-muted); font-size: 11px; }
-  .pos-product-name { min-height: 40px; font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .pos-price-row { display: flex; align-items: baseline; gap: 6px; color: var(--pos-primary); font-weight: 800; }
+  .pos-sku { color: var(--pos-muted); font-size: 8px; }
+  .pos-product-name { min-height: 6px; font-size: 12px; line-height: 1.35; display: -webkit-box;-webkit-box-orient: vertical; overflow: hidden; }
+  .pos-price-row { display: flex; align-items: baseline; gap: 6px; color: var(--pos-primary); font-weight: 200; }
   .pos-price-row del { color: var(--pos-muted); font-weight: 500; font-size: 11px; }
   .pos-stock { width: max-content; border-radius: 999px; padding: 3px 7px; font-size: 11px; font-weight: 800; }
   .pos-stock-green { background: #dcfce7; color: #166534; }
   .pos-stock-orange { background: #ffedd5; color: #9a3412; }
   .pos-stock-red { background: #fee2e2; color: #991b1b; }
   .pos-add-btn {
-    margin-top: auto; width: 100%; border: 0; border-radius: 8px; padding: 8px; background: var(--pos-primary); color: #fff; font-weight: 800;
+    margin-top: auto; width: 92%; border: 0; border-radius: 8px; padding: 4px; background: var(--pos-primary); color: #fff; font-weight: 200;
   }
   .pos-add-btn:disabled, .pos-checkout:disabled { opacity: 0.55; cursor: not-allowed; background: var(--pos-muted); }
   .pos-skeleton { animation: posPulse 1.2s infinite ease-in-out; background: linear-gradient(90deg, var(--pos-soft), var(--pos-border), var(--pos-soft)); background-size: 200% 100%; }

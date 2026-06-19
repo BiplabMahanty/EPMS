@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import AppLayout from '../../components/layout/AppLayout';
 import Badge from '../../components/ui/Badge';
 import ConfirmModal from '../../components/ui/ConfirmModal';
+import ProductEditModal from '../../components/ui/ProductEditModal';
 import EmptyState from '../../components/ui/EmptyState';
 import { SkeletonRow } from '../../components/ui/Skeleton';
 import { productsApi } from '../../services/api';
@@ -15,6 +16,7 @@ import './Products.css';
 export default function Products() {
   const qc = useQueryClient();
   const [deleteId, setDeleteId] = useState(null);
+  const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState('');
 
   const { data, isLoading } = useQuery({
@@ -66,17 +68,17 @@ export default function Products() {
                   <tr key={p._id}>
                     <td className="product-cell">
                       {p.thumbnail ? (<img src={`${API_URL}${p.thumbnail}`} alt={p.thumbnail} className="product-image" onError={(e) => {
-                        console.log('Image failed:', `${API_URL}/${p.thumbnail}`);
+                        console.log('Image failed:', `${API_URL}${p.thumbnail}`);
                         e.target.style.display = 'none';
                       }} />) : (<span>No Image</span>)} </td>
                     <td className="product-name" >{p.name}</td>
                     <td className="product-sku" >{p.sku}</td>
                     <td className="product-price" >{formatCurrency(p.salePrice)}</td>
-                    <td cclassName="product-cell" ><span className="product-stock" style={{ color: stockColor, }}>{p.currentStock}</span></td>
+                    <td className="product-cell" ><span className="product-stock" style={{ color: stockColor, }}>{p.currentStock}</span></td>
                     <td className="product-status"><Badge label={p.status} /></td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <Link to={`/products/${p._id}`} className="btn btn-secondary btn-sm">Edit</Link>
+                        <button className="btn btn-secondary btn-sm" onClick={() => setEditId(p._id)}>Edit</button>
                         <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(p._id)}>Del</button>
                       </div>
                     </td>
@@ -91,6 +93,7 @@ export default function Products() {
       {deleteId && (
         <ConfirmModal onCancel={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId)} loading={del.isPending} message="This will permanently delete the product." />
       )}
+      {editId && <ProductEditModal id={editId} onClose={() => setEditId(null)} />}
     </AppLayout>
   );
 }
