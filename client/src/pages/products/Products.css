@@ -1,0 +1,251 @@
+/* ==========================
+   TABLE CONTAINER
+========================== */
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.06),
+    0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow:
+    0 12px 35px rgba(0,0,0,0.12),
+    0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ==========================
+   TABLE
+========================== */
+
+.esp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* ==========================
+   HEADER
+========================== */
+
+.esp-table thead {
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+  );
+}
+
+.esp-table th {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  padding: 18px;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ==========================
+   ROWS
+========================== */
+
+.esp-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.esp-table tbody tr:hover {
+  background: #f8fafc;
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* Zebra effect */
+
+.esp-table tbody tr:nth-child(even) {
+  background: #fcfcfc;
+}
+
+.esp-table tbody tr:nth-child(even):hover {
+  background: #f1f5f9;
+}
+
+/* ==========================
+   CELLS
+========================== */
+
+.esp-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.3s ease;
+}
+
+/* ==========================
+   PRODUCT IMAGE
+========================== */
+
+.product-image {
+  width: 55px;
+  height: 55px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  transition: all 0.35s ease;
+  cursor: pointer;
+}
+
+.product-image:hover {
+  transform: scale(1.15) rotate(3deg);
+  box-shadow:
+    0 10px 25px rgba(37,99,235,0.25);
+  border-color: #2563eb;
+}
+
+/* ==========================
+   PRODUCT NAME
+========================== */
+
+.product-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-name:hover {
+  color: #2563eb;
+  cursor: pointer;
+}
+
+/* ==========================
+   SKU
+========================== */
+
+.product-sku {
+  font-family: monospace;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ==========================
+   PRICE
+========================== */
+
+.product-price {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ==========================
+   STOCK
+========================== */
+
+.product-stock {
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.product-stock:hover {
+  transform: scale(1.1);
+}
+
+/* ==========================
+   ACTION BUTTONS
+========================== */
+
+.product-actions,
+td > div {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Edit Button */
+
+.btn-secondary {
+  background: #2563eb;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(37,99,235,0.25);
+}
+
+/* Delete Button */
+
+.btn-danger {
+  background: #ef4444;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 20px rgba(239,68,68,0.25);
+}
+
+/* ==========================
+   BUTTON CLICK EFFECT
+========================== */
+
+.btn {
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.esp-table tbody tr {
+  animation: fadeUp .4s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

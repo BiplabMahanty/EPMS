@@ -18,18 +18,23 @@ function CategoryModal({ onClose, onSave, initial, isPending }) {
     if (imageFile) fd.append('image', imageFile);
     onSave(fd);
   };
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <Modal onClose={onClose} title={initial?._id ? 'Edit Category' : 'Add Category'}>
       <form onSubmit={handleSubmit(submit)}>
         <div className="form-group">
-          <ImageUpload label="Category Image" onChange={setImageFile} value={initial?.image} />
+          <ImageUpload label="Category Image" onChange={setImageFile} value={initial?.image ? `${API_URL}${initial.image}`
+      : ''} />
         </div>
         <div className="form-group"><label className="form-label">Name *</label><Input {...register('name')} required /></div>
         <div className="form-group"><label className="form-label">Description</label><Input {...register('description')} /></div>
         <div className="form-row">
-          <div className="form-group"><label className="form-label">Color</label><Input {...register('colorLabel')} type="color" /></div>
-          <div className="form-group"><label className="form-label">Icon (emoji)</label><Input {...register('icon')} placeholder="📦" /></div>
+          
+          {/* This also includes optional fields for color and icon, which can be used for additional customization of the category. */}
+
+          {/* <div className="form-group"><label className="form-label">Color</label><Input {...register('colorLabel')} type="color" /></div> */}
+          {/* <div className="form-group"><label className="form-label"></label><Input {...register('icon')} placeholder="📦" /></div> */}
         </div>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
           <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
@@ -50,12 +55,14 @@ function SubcategoryModal({ onClose, onSave, initial, categories, isPending }) {
     if (imageFile) fd.append('image', imageFile);
     onSave(fd);
   };
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <Modal onClose={onClose} title={initial?._id ? 'Edit Subcategory' : 'Add Subcategory'}>
       <form onSubmit={handleSubmit(submit)}>
         <div className="form-group">
-          <ImageUpload label="Subcategory Image" onChange={setImageFile} value={initial?.image} />
+          <ImageUpload label="Subcategory Image" onChange={setImageFile} value={initial?.image ? `${API_URL}${initial.image}`
+      : ''} />
         </div>
         <div className="form-group">
           <label className="form-label">Category *</label>
@@ -114,6 +121,9 @@ export default function Categories() {
     color: active ? '#fff' : 'var(--esp-text-muted)', fontWeight: 500, fontSize: 14,
   });
 
+  const API_URL = import.meta.env.VITE_API_URL;
+  console.log("API_URL =", API_URL);
+
   return (
     <AppLayout title="Categories">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -126,16 +136,19 @@ export default function Categories() {
           : <Button onClick={() => setSubModal({})}>+ Add Subcategory</Button>}
       </div>
 
+            
       {tab === 'categories' && (
         <div className="card">
           <div className="table-wrapper">
             <table className="esp-table">
-              <thead><tr><th>Image</th><th>Icon</th><th>Name</th><th>Description</th><th></th></tr></thead>
+              <thead><tr><th>Image</th><th>Name</th><th>Description</th><th></th></tr></thead>
               <tbody>
                 {cats.map((c) => (
                   <tr key={c._id}>
-                    <td>{c.image ? <img src={c.image} alt="" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 6 }} /> : '—'}</td>
-                    <td>{c.icon}</td>
+
+                    {/* // Chages done here to fix the image url issue in category table */}
+                    <td>{c.image ? <img src={`${API_URL}${c.image}`} alt={c.name} style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 6 }} onError={(e) => console.log('Image Error:', e.target.src)} /> : '—'}</td>
+                    {/* <td>{c.icon}</td> */}
                     <td style={{ fontWeight: 500 }}><span style={{ color: c.colorLabel, marginRight: 6 }}>●</span>{c.name}</td>
                     <td style={{ color: 'var(--esp-text-muted)', fontSize: 13 }}>{c.description}</td>
                     <td>
@@ -161,7 +174,9 @@ export default function Categories() {
               <tbody>
                 {subs.map((s) => (
                   <tr key={s._id}>
-                    <td>{s.image ? <img src={s.image} alt="" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 6 }} /> : '—'}</td>
+
+                     {/* Chages done here to fix the image url issue in subcategory table */}
+                    <td>{s.image ? <img src={`${API_URL}${s.image} `} alt={s.name} style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 6 }} onError={(e) => console.log('Image Error:', e.target.src)} /> : '—'}</td>
                     <td style={{ fontWeight: 500 }}>{s.name}</td>
                     <td style={{ fontSize: 13 }}>{s.categoryId?.name || '—'}</td>
                     <td style={{ color: 'var(--esp-text-muted)', fontSize: 13 }}>{s.description}</td>

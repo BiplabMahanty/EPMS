@@ -9,6 +9,8 @@ import { SkeletonRow } from '../../components/ui/Skeleton';
 import { productsApi } from '../../services/api';
 import { formatCurrency } from '../../utils/format';
 import { useState } from 'react';
+import './Products.css';
+
 
 export default function Products() {
   const qc = useQueryClient();
@@ -27,6 +29,7 @@ export default function Products() {
   });
 
   const products = data?.docs || [];
+  const API_URL = import.meta.env.VITE_API_URL;
 
   return (
     <AppLayout title="Products">
@@ -41,9 +44,19 @@ export default function Products() {
       <div className="card">
         <div className="table-wrapper">
           <table className="esp-table">
-            <thead><tr><th>Name</th><th>SKU</th><th>Sale Price</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+            <thead>
+              <tr>
+              <th className = "table-header">Image</th>
+              <th className="table-header">Name</th>
+                  <th className="table-header">Product ID</th>
+                  <th className="table-header">Sale Price</th>
+                  <th className="table-header">Stock</th>
+                  <th className="table-header">Status</th>
+                  <th className="table-header">Actions</th>
+            </tr>
+            </thead>
             <tbody>
-              {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={6} />)}
+              {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={7} />)}
               {!isLoading && products.length === 0 && (
                 <tr><td colSpan={6}><EmptyState icon="📦" title="No products yet" description="Add your first product to get started" action={<Link to="/products/new" className="btn btn-primary">Add Product</Link>} /></td></tr>
               )}
@@ -51,11 +64,16 @@ export default function Products() {
                 const stockColor = p.currentStock <= 0 ? 'var(--esp-danger)' : p.currentStock <= p.lowStockThreshold ? 'var(--esp-warning)' : 'var(--esp-success)';
                 return (
                   <tr key={p._id}>
-                    <td style={{ fontWeight: 500 }}>{p.name}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--esp-text-muted)' }}>{p.sku}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(p.salePrice)}</td>
-                    <td><span style={{ color: stockColor, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{p.currentStock}</span></td>
-                    <td><Badge label={p.status} /></td>
+                    <td className="product-cell">
+                      {p.thumbnail ? (<img src={`${API_URL}${p.thumbnail}`} alt={p.thumbnail} className="product-image" onError={(e) => {
+                        console.log('Image failed:', `${API_URL}/${p.thumbnail}`);
+                        e.target.style.display = 'none';
+                      }} />) : (<span>No Image</span>)} </td>
+                    <td className="product-name" >{p.name}</td>
+                    <td className="product-sku" >{p.sku}</td>
+                    <td className="product-price" >{formatCurrency(p.salePrice)}</td>
+                    <td cclassName="product-cell" ><span className="product-stock" style={{ color: stockColor, }}>{p.currentStock}</span></td>
+                    <td className="product-status"><Badge label={p.status} /></td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
                         <Link to={`/products/${p._id}`} className="btn btn-secondary btn-sm">Edit</Link>

@@ -21,7 +21,7 @@ const schema = z.object({
   purchasePrice: z.coerce.number().min(0).optional(),
   mrp: z.coerce.number().min(0).optional(),
   gstRate: z.coerce.number(),
-  hsnCode: z.string().optional(),
+  hsnCode: z.coerce.number().optional(),
   currentStock: z.coerce.number().default(0),
   lowStockThreshold: z.coerce.number().default(10),
   reorderLevel: z.coerce.number().default(5),
@@ -59,6 +59,9 @@ export default function ProductForm() {
       const fd = new FormData();
       Object.entries(data).forEach(([k, v]) => { if (v !== undefined && v !== '') fd.append(k, v); });
       imageFiles.forEach((f) => fd.append('images', f));
+      for (let pair of fd.entries()) {
+    console.log(pair[0], pair[1]);
+    }
       return isEdit ? productsApi.update(id, fd) : productsApi.create(fd);
     },
     onSuccess: () => { toast.success(isEdit ? 'Product updated' : 'Product created'); navigate('/products'); },
@@ -78,11 +81,11 @@ export default function ProductForm() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Product Name *</label>
-                <Input {...register('name')} error={errors.name?.message} />
+                <Input {...register('name')} error={errors.name?.message} placeholder="Write here" />
               </div>
               <div className="form-group">
-                <label className="form-label">SKU (auto if blank)</label>
-                <Input {...register('sku')} placeholder="ESP-XXXXXX" />
+                <label className="form-label">Product ID (auto if blank)</label>
+                <Input {...register('sku')} placeholder="ID-XXXXXX" />
               </div>
             </div>
             <div className="form-row">

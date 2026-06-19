@@ -13,7 +13,7 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Security headers
-app.use(helmet());
+app.use(helmet({crossOriginResourcePolicy: false ,}));
 
 // CORS
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
