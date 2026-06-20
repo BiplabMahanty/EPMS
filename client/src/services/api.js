@@ -132,6 +132,13 @@ export const reportsApi = {
   pnl: (params) => api.get('/reports/pnl', { params }),
 };
 
+export const taxApi = {
+  list: () => api.get('/taxes'),
+  create: (d) => api.post('/taxes', d),
+  update: (id, d) => api.patch(`/taxes/${id}`, d),
+  delete: (id) => api.delete(`/taxes/${id}`),
+};
+
 export const settingsApi = {
   getBusiness: () => api.get('/settings/business'),
   updateBusiness: (d) => api.patch('/settings/business', d),

@@ -49,7 +49,7 @@ export default function App() {
         <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
         <Suspense fallback={<Loading />}>
           <Routes>
-            <Route path="/" element={<Navigate to="/" replace />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/employee-login" element={<EmployeeLogin />} />
             <Route path="/register" element={<Register />} />

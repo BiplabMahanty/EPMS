@@ -8,6 +8,9 @@ const PORT = process.env.PORT || 5000;
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
+
+  console.log('Connecting to MongoDB...');
+  console.log(`Using connection string: ${process.env.MONGO_URI}`);
 connectDB().then(() => {
   app.listen(PORT, () => console.log(`ESP server running on port ${PORT}`));
 }).catch((err) => {

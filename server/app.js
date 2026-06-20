@@ -58,6 +58,7 @@ app.use('/api/invoices', require('./routes/invoice.routes'));
 app.use('/api/inventory', require('./routes/inventory.routes'));
 app.use('/api/reports', require('./routes/report.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
+app.use('/api/taxes', require('./routes/tax.routes'));
 app.use('/api/employee', require('./routes/employee.routes'));
 app.use('/api/employees', require('./routes/employeeAdmin.routes'));
 

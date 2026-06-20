@@ -4,7 +4,7 @@ const StockLedger = require('../models/StockLedger');
 
 const updateStock = async (productId, quantity, type, reference, reason, businessId, createdBy, session) => {
   console.log(`Updating stock for product ${productId}: ${type} ${quantity} (reason: ${reason})`);
-  const product = await Product.findOne({name:productId}).session(session);
+  const product = await Product.findById(productId).session(session);
   console.log('Current stock:', product ? product.currentStock : 'Product not found');
   if (!product) throw new Error(`Product ${productId} not found`);
 

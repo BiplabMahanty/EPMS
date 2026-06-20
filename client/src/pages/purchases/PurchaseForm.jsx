@@ -6,11 +6,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import AppLayout from '../../components/layout/AppLayout';
 import { Button, Input, Select } from '../../components/ui/FormElements';
-import { invoicesApi, partiesApi, productsApi } from '../../services/api';
+import { invoicesApi, partiesApi, productsApi, taxApi } from '../../services/api';
 import { formatCurrency } from '../../utils/format';
 import { calculateGST } from '../../utils/gstCalculator';
-
-const emptyItem = { name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: 18, unit: '' };
 
 export default function PurchaseForm() {
   const { id } = useParams();
@@ -19,9 +17,12 @@ export default function PurchaseForm() {
 
   const { data: parties } = useQuery({ queryKey: ['parties-supplier'], queryFn: () => partiesApi.list({ type: 'supplier', limit: 200 }).then((r) => r.data.docs) });
   const { data: products } = useQuery({ queryKey: ['products-all'], queryFn: () => productsApi.list({ limit: 500 }).then((r) => r.data.docs) });
+  const { data: taxes = [] } = useQuery({ queryKey: ['taxes'], queryFn: () => taxApi.list().then((r) => r.data) });
 
+  const defaultTax = taxes.find((t) => t.isDefault);
+  const emptyItem = { name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: defaultTax?.rate ?? 18, unit: '' };
   const { register, control, handleSubmit, watch, setValue } = useForm({
-    defaultValues: { type: 'purchase', date: new Date().toISOString().slice(0, 10), lineItems: [emptyItem], amountPaid: 0, paymentMode: 'cash' },
+    defaultValues: { type: 'purchase', date: new Date().toISOString().slice(0, 10), lineItems: [{ name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: 18, unit: '' }], amountPaid: 0, paymentMode: 'cash' },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: 'lineItems' });
@@ -83,7 +84,9 @@ export default function PurchaseForm() {
                         <td><Input {...register(`lineItems.${i}.rate`)} type="number" step="0.01" style={{ width: 100 }} /></td>
                         <td>
                           <Select {...register(`lineItems.${i}.gstRate`)} style={{ width: 80 }}>
-                            {[0,5,12,18,28].map((r) => <option key={r} value={r}>{r}%</option>)}
+                            {taxes.length > 0
+                              ? taxes.map((t) => <option key={t._id} value={t.rate}>{t.name} {t.rate}%</option>)
+                              : [0,5,12,18,28].map((r) => <option key={r} value={r}>{r}%</option>)}
                           </Select>
                         </td>
                         <td style={{ fontFamily: 'var(--font-mono)', fontSize: 13 }}>{formatCurrency(items[i]?.amount || 0)}</td>
@@ -94,7 +97,7 @@ export default function PurchaseForm() {
                 </table>
               </div>
               <div style={{ padding: '12px 16px' }}>
-                <Button type="button" variant="secondary" size="sm" onClick={() => append(emptyItem)}>+ Add Line</Button>
+                <Button type="button" variant="secondary" size="sm" onClick={() => append({ name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: defaultTax?.rate ?? 18, unit: '' })}>+ Add Line</Button>
               </div>
             </div>
           </div>

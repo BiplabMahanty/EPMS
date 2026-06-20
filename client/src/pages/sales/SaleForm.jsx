@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   categoriesApi,
@@ -8,17 +7,12 @@ import {
   partiesApi,
   productsApi,
   settingsApi,
+  taxApi,
 } from "../../services/api";
 import { useAuthStore } from "../../store";
 import { formatCurrency } from "../../utils/format";
 
 const PAGE_SIZE = 24;
-const TAX_OPTIONS = [
-  { id: "gst-5", name: "GST", rate: 5 },
-  { id: "gst-12", name: "GST", rate: 12 },
-  { id: "gst-18", name: "GST", rate: 18 },
-  { id: "gst-28", name: "GST", rate: 28 },
-];
 
 const makeSession = (index) => ({
   id: crypto.randomUUID(),
@@ -327,42 +321,35 @@ function SearchOverlay({ open, onClose, onAdd }) {
 }
 
 function CustomerSelector({ session, onPatch }) {
-  const qc = useQueryClient();
   const [term, setTerm] = useState("");
   const [open, setOpen] = useState(false);
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState({ name: "", phone: "" });
   const debounced = useDebouncedValue(term);
+  const ref = useRef(null);
 
   const { data } = useQuery({
-    queryKey: ["pos-customers", debounced],
-    enabled: open && debounced.trim().length > 0,
+    queryKey: ["pos-parties", debounced],
+    enabled: open,
     queryFn: () =>
       partiesApi
-        .list({ type: "customer", search: debounced, limit: 8 })
-        .then((res) => res.data.docs || []),
-    onError: () => toast.error("Customer search failed"),
+        .list({ search: debounced, limit: 10 })
+        .then((res) =>
+          (res.data.docs || []).filter((p) => p.type === "customer" || p.type === "both"),
+        ),
+    onError: () => toast.error("Party search failed"),
   });
 
-  const createCustomer = useMutation({
-    mutationFn: () =>
-      partiesApi.create({ ...draft, type: "customer" }).then((res) => res.data),
-    onSuccess: (party) => {
-      onPatch({ customer: party });
-      setAdding(false);
-      setOpen(false);
-      setTerm("");
-      setDraft({ name: "", phone: "" });
-      qc.invalidateQueries({ queryKey: ["pos-customers"] });
-      toast.success("Customer created");
-    },
-    onError: (error) =>
-      toast.error(error.response?.data?.message || "Could not create customer"),
-  });
+  useEffect(() => {
+    if (!open) return;
+    const onClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [open]);
 
   return (
-    <section className="pos-panel-section pos-customer">
-      <label>CUSTOMER</label>
+    <section className="pos-panel-section pos-customer" ref={ref}>
+      <label>PARTY (CUSTOMER)</label>
       <input
         value={term}
         onFocus={() => setOpen(true)}
@@ -370,7 +357,7 @@ function CustomerSelector({ session, onPatch }) {
           setTerm(event.target.value);
           setOpen(true);
         }}
-        placeholder="Search by name"
+        placeholder="Search party by name or phone"
       />
       {open && (
         <div className="pos-customer-menu">
@@ -385,65 +372,33 @@ function CustomerSelector({ session, onPatch }) {
               }}
             >
               <strong>{party.name}</strong>
-              <span>{party.phone}</span>
+              <span>
+                {party.phone}
+                {party.type === "both" && " · customer/supplier"}
+              </span>
             </button>
           ))}
           {debounced && (data || []).length === 0 && (
-            <div className="pos-customer-empty">No customers found</div>
+            <div className="pos-customer-empty">No matching parties found</div>
           )}
-          <button
-            type="button"
-            className="pos-create-customer"
-            onClick={() => setAdding(true)}
-          >
-            Create New Customer
-          </button>
+          {!debounced && (data || []).length === 0 && (
+            <div className="pos-customer-empty">Start typing to search</div>
+          )}
         </div>
       )}
-      <AnimatePresence>
-        {adding && (
-          <motion.div
-            className="pos-quick-add"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-          >
-            <input
-              value={draft.name}
-              onChange={(event) =>
-                setDraft({ ...draft, name: event.target.value })
-              }
-              placeholder="Name"
-            />
-            <input
-              value={draft.phone}
-              onChange={(event) =>
-                setDraft({ ...draft, phone: event.target.value })
-              }
-              placeholder="Phone"
-            />
-            <div>
-              <button
-                type="button"
-                disabled={
-                  !draft.name || !draft.phone || createCustomer.isPending
-                }
-                onClick={() => createCustomer.mutate()}
-              >
-                Create
-              </button>
-              <button type="button" onClick={() => setAdding(false)}>
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
       {session.customer && (
         <div className="pos-selected-customer">
           <span>✓</span>
           <strong>{session.customer.name}</strong>
           <small>{session.customer.phone}</small>
+          <button
+            type="button"
+            style={{ marginLeft: "auto", border: 0, background: "transparent", color: "var(--pos-muted)", cursor: "pointer" }}
+            onClick={() => onPatch({ customer: null })}
+            title="Remove"
+          >
+            ×
+          </button>
         </div>
       )}
     </section>
@@ -464,6 +419,7 @@ function CartPanel({
   totals,
   onCheckout,
   checkoutLoading,
+  taxOptions,
 }) {
   const [renaming, setRenaming] = useState(null);
   const [renameValue, setRenameValue] = useState("");
@@ -621,9 +577,9 @@ function CartPanel({
           </button>
           {taxOpen && (
             <div className="pos-tax-menu">
-              {TAX_OPTIONS.map((tax) => {
+              {taxOptions.map((tax) => {
                 const checked = activeSession.taxes.some(
-                  (item) => item.id === tax.id,
+                  (item) => item._id === tax._id,
                 );
                 return (
                   <label key={tax.id}>
@@ -634,7 +590,7 @@ function CartPanel({
                         patchSession({
                           taxes: checked
                             ? activeSession.taxes.filter(
-                                (item) => item.id !== tax.id,
+                                (item) => item._id !== tax._id,
                               )
                             : [...activeSession.taxes, tax],
                         });
@@ -653,11 +609,11 @@ function CartPanel({
           {activeSession.taxes.map((tax) => (
             <button
               type="button"
-              key={tax.id}
+              key={tax._id}
               onClick={() =>
                 patchSession({
                   taxes: activeSession.taxes.filter(
-                    (item) => item.id !== tax.id,
+                    (item) => item._id !== tax._id,
                   ),
                 })
               }
@@ -756,24 +712,22 @@ export default function SaleForm() {
   const activeSession =
     sessions.find((session) => session.id === activeId) || sessions[0];
 
-  const { data: settings } = useQuery({
-    queryKey: ["pos-settings-tax"],
-    queryFn: () => settingsApi.getTax().then((res) => res.data),
+  const { data: taxOptions = [] } = useQuery({
+    queryKey: ["pos-taxes"],
+    queryFn: () => taxApi.list().then((res) => res.data),
   });
 
   const taxApplied = useRef(false);
   useEffect(() => {
-    if (taxApplied.current || !settings?.defaultGstRate) return;
-    const defaultTax = TAX_OPTIONS.find(
-      (tax) => tax.rate === Number(settings.defaultGstRate),
-    );
+    if (taxApplied.current || !taxOptions.length) return;
+    const defaultTax = taxOptions.find((t) => t.isDefault);
     if (defaultTax) {
       taxApplied.current = true;
       setSessions((prev) =>
         prev.map((s, i) => (i === 0 ? { ...s, taxes: [defaultTax] } : s)),
       );
     }
-  }, [settings?.defaultGstRate]);
+  }, [taxOptions]);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["pos-categories"],
@@ -1321,6 +1275,7 @@ export default function SaleForm() {
         totals={totals}
         onCheckout={() => checkout.mutate()}
         checkoutLoading={checkout.isPending}
+        taxOptions={taxOptions}
       />
 
       <SearchOverlay
