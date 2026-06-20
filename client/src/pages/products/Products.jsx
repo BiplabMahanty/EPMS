@@ -38,7 +38,7 @@ export default function Products() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <input className="input" placeholder="Search products…" value={search} onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: 280 }} />
         <div style={{ display: 'flex', gap: 8 }}>
-          <Link to="/products/categories" className="btn btn-secondary">Categories</Link>
+          <Link to="/products/categories" className="btn btn-secondary btn-action-hover">Categories</Link>
           <Link to="/products/new" className="btn btn-primary">+ Add Product</Link>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function Products() {
                     <td className="product-status"><Badge label={p.status} /></td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => setEditId(p._id)}>Edit</button>
+                        <button className="btn btn-secondary btn-sm btn-action-hover" onClick={() => setEditId(p._id)}>Edit</button>
                         <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(p._id)}>Del</button>
                       </div>
                     </td>

@@ -45,7 +45,7 @@ export default function Sales() {
                   <td>{inv.party?.name}</td>
                   <td style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(inv.grandTotal)}</td>
                   <td><Badge label={inv.status} /></td>
-                  <td><Link to={`/sales/${inv._id}`} className="btn btn-secondary btn-sm">View</Link></td>
+                  <td><Link to={`/sales/${inv._id}`} className="btn btn-secondary btn-sm btn-action-hover">View</Link></td>
                 </tr>
               ))}
             </tbody>

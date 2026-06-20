@@ -71,7 +71,7 @@ export default function Dashboard() {
               { to: '/purchases/new', label: '+ New Purchase', color: 'var(--esp-accent)' },
               { to: '/parties/new', label: '+ Add Party', color: 'var(--esp-text-secondary)' },
             ].map(({ to, label, color }) => (
-              <Link key={to} to={to} className="btn btn-secondary" style={{ justifyContent: 'center', borderLeft: `3px solid ${color}` }}>{label}</Link>
+              <Link key={to} to={to} className="btn btn-quick-action" style={{ '--quick-action-color': color }}>{label}</Link>
             ))}
           </div>
         </div>

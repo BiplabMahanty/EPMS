@@ -153,7 +153,7 @@ export default function Categories() {
                     <td style={{ color: 'var(--esp-text-muted)', fontSize: 13 }}>{c.description}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <Button variant="secondary" size="sm" onClick={() => setModal(c)}>Edit</Button>
+                        <Button variant="secondary" size="sm" className="btn-action-hover" onClick={() => setModal(c)}>Edit</Button>
                         <Button variant="danger" size="sm" onClick={() => { if (confirm('Delete category?')) delCat.mutate(c._id); }}>Del</Button>
                       </div>
                     </td>
@@ -182,7 +182,7 @@ export default function Categories() {
                     <td style={{ color: 'var(--esp-text-muted)', fontSize: 13 }}>{s.description}</td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <Button variant="secondary" size="sm" onClick={() => setSubModal(s)}>Edit</Button>
+                        <Button variant="secondary" size="sm" className="btn-action-hover" onClick={() => setSubModal(s)}>Edit</Button>
                         <Button variant="danger" size="sm" onClick={() => { if (confirm('Delete subcategory?')) delSub.mutate(s._id); }}>Del</Button>
                       </div>
                     </td>

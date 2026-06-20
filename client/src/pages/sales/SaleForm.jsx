@@ -24,6 +24,7 @@ const makeSession = (index) => ({
   note: "",
   payment: "cash",
 });
+const api =import.meta.env.VITE_API_URL;
 
 function useDebouncedValue(value, delay = 280) {
   const [debounced, setDebounced] = useState(value);
@@ -84,9 +85,11 @@ function StockBadge({ stock }) {
 
 function ProductImage({ product, className = "" }) {
   const src = getProductImage(product);
+  console.log("Product image source:", src);
+  const api = import.meta.env.VITE_API_URL;
   if (src) {
     return (
-      <img className={className} src={src} alt={product.name} loading="lazy" />
+      <img className={className} src={`${api}${src}`} loading="lazy" />
     );
   }
   return (
@@ -113,9 +116,24 @@ function ProductCard({ product, onAdd, onOpen }) {
       onKeyDown={(e) => e.key === "Enter" && onOpen(product)}
     >
       <div className="pos-product-media">
-        {!!discount && <span className="pos-discount">-{discount}%</span>}
-        <ProductImage product={product} className="pos-product-img" />
-      </div>
+  {!!discount && <span className="pos-discount">-{discount}%</span>}
+
+  {product?.thumbnail ? (
+    <img
+      src={`${api}${product.thumbnail}`}
+      alt={product.name}
+      className="pos-product-img"
+      loading="lazy"
+    />
+  ) : (
+    <div
+      className="pos-image-fallback pos-product-img"
+      aria-label={product?.name || "Product"}
+    >
+      {(product?.name || "P").slice(0, 2).toUpperCase()}
+    </div>
+  )}
+</div>
       <div className="pos-product-body">
         <span className="pos-sku">{product.sku || "No SKU"}</span>
         <strong className="pos-product-name">{product.name}</strong>
@@ -1158,7 +1176,7 @@ export default function SaleForm() {
                 }}
               >
                 {category.image ? (
-                  <img src={category.image} alt="" />
+                  <img src={`${api}${category.image}`} alt="" />
                 ) : (
                   <span className="pos-chip-avatar">
                     {category.name.slice(0, 1)}
@@ -1197,7 +1215,7 @@ export default function SaleForm() {
                   setPage(1);
                 }}
               >
-                {sub.image && <img src={sub.image} alt="" />}
+                {sub.image && <img src={`${api}${sub.image}`} alt="" />}
                 <span>{sub.name}</span>
                 <b>{counts.subCounts[sub._id] || 0}</b>
               </button>
@@ -1214,8 +1232,8 @@ export default function SaleForm() {
             >
               <option value="best">Best Selling</option>
               <option value="latest">Latest</option>
-              <option value="price-asc">Price ↑</option>
-              <option value="price-desc">Price ↓</option>
+              <option value="price-asc">Price Low To High</option>
+              <option value="price-desc">Price High To Low</option>
               <option value="az">A→Z</option>
             </select>
           </div>

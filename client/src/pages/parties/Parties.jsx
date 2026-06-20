@@ -61,7 +61,7 @@ export default function Parties() {
                   <td style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--esp-text-muted)' }}>{p.gstin || '—'}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 4 }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => setEditId(p._id)}>Edit</button>
+                      <button className="btn btn-secondary btn-sm btn-action-hover" onClick={() => setEditId(p._id)}>Edit</button>
                       <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(p._id)}>Del</button>
                     </div>
                   </td>

@@ -7,16 +7,61 @@ import Modal from '../../components/ui/Modal';
 import { Button, Input, Select } from '../../components/ui/FormElements';
 import { SkeletonRow } from '../../components/ui/Skeleton';
 import EmptyState from '../../components/ui/EmptyState';
-import { inventoryApi } from '../../services/api';
-import { useForm } from 'react-hook-form';
+import { inventoryApi, categoriesApi, productsApi } from '../../services/api';
+import { useForm, Controller } from 'react-hook-form';
 
 function AdjustModal({ onClose, onSave }) {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm();
+  const selectedCategory = watch('categoryId');
+  const selectedSubCategory = watch('subCategoryId');
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => categoriesApi.list().then((r) => r.data),
+  });
+
+  const { data: subCategories = [] } = useQuery({
+    queryKey: ['subcategories', selectedCategory],
+    queryFn: () => categoriesApi.getSubsByCategory(selectedCategory).then((r) => r.data),
+    enabled: !!selectedCategory,
+  });
+
+  const { data: allProducts = [] } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => productsApi.list({ limit: 1000 }).then((r) => r.data?.docs ?? r.data?.products ?? (Array.isArray(r.data) ? r.data : [])),
+  });
+
+  const products = allProducts.filter((p) => {
+    if (selectedSubCategory) return p.subcategory?._id === selectedSubCategory || p.subcategory === selectedSubCategory;
+    if (selectedCategory) return p.category?._id === selectedCategory || p.category === selectedCategory;
+    return true;
+  });
+
   return (
     <Modal onClose={onClose} title="Adjust Stock">
-      <form onSubmit={handleSubmit((d) => { onSave(d); reset(); })}>
-        <div className="form-group"><label className="form-label">Product ID</label><Input {...register('productId')} required /></div>
-        <div className="form-group"><label className="form-label">Quantity</label><Input {...register('quantity')} type="number" required /></div>
+      <form onSubmit={handleSubmit((d) => { onSave({ productId: d.productId, quantity: d.quantity, type: d.type, reason: d.reason }); reset(); })}>
+        <div className="form-group">
+          <label className="form-label">Category</label>
+          <Select {...register('categoryId')} onChange={(e) => { setValue('categoryId', e.target.value); setValue('subCategoryId', ''); setValue('productId', ''); }}>
+            <option value="">All Categories</option>
+            {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+          </Select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Sub Category</label>
+          <Select {...register('subCategoryId')} onChange={(e) => { setValue('subCategoryId', e.target.value); setValue('productId', ''); }} disabled={!selectedCategory}>
+            <option value="">All Sub Categories</option>
+            {subCategories.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+          </Select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Product</label>
+          <Select {...register('productId', { required: true })}>
+            <option value="">Select Product</option>
+            {products.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+          </Select>
+        </div>
+        <div className="form-group"><label className="form-label">Quantity</label><Input {...register('quantity', { required: true })} type="number" /></div>
         <div className="form-group">
           <label className="form-label">Type</label>
           <Select {...register('type')}>
