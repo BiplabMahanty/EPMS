@@ -533,21 +533,30 @@ function CartPanel({
               <ProductImage product={item.product} className="pos-cart-img" />
               <div className="pos-cart-info">
                 <strong>{item.product.name}</strong>
-                <small>{formatCurrency(item.price)}</small>
-                <div className="pos-stepper">
-                  <button
-                    type="button"
-                    onClick={() => updateQty(item.product._id, item.qty - 1)}
-                  >
-                    -
-                  </button>
-                  <span>{item.qty}</span>
-                  <button
-                    type="button"
-                    onClick={() => updateQty(item.product._id, item.qty + 1)}
-                  >
-                    +
-                  </button>
+                <small>
+                  {formatCurrency(item.price)}{item.product.unit?.symbol ? ` / ${item.product.unit.symbol}` : ''}
+                </small>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <div className="pos-stepper">
+                    <button
+                      type="button"
+                      onClick={() => updateQty(item.product._id, item.qty - 1)}
+                    >
+                      -
+                    </button>
+                    <span>{item.qty}</span>
+                    <button
+                      type="button"
+                      onClick={() => updateQty(item.product._id, item.qty + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                  {item.product.unit?.symbol && (
+                    <span style={{ fontSize: 11, color: 'var(--pos-muted)', fontFamily: 'var(--font-mono, monospace)' }}>
+                      {item.product.unit.symbol}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="pos-line-total">
