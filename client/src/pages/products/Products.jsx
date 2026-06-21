@@ -11,6 +11,8 @@ import { productsApi } from '../../services/api';
 import { formatCurrency } from '../../utils/format';
 import { useState } from 'react';
 import './Products.css';
+import ProductDetailsModal from '../../components/ui/ProductDetailsModal';
+
 
 
 export default function Products() {
@@ -32,6 +34,7 @@ export default function Products() {
 
   const products = data?.docs || [];
   const API_URL = import.meta.env.VITE_API_URL;
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   return (
     <AppLayout title="Products">
@@ -71,7 +74,7 @@ export default function Products() {
                         console.log('Image failed:', `${API_URL}${p.thumbnail}`);
                         e.target.style.display = 'none';
                       }} />) : (<span>No Image</span>)} </td>
-                    <td className="product-name" >{p.name}</td>
+                    <td className="product-name" > <span className='product-link' onClick={()=> setSelectedProduct(p)}>{p.name}</span></td>
                     <td className="product-sku" >{p.sku}</td>
                     <td className="product-price" >{formatCurrency(p.salePrice)}</td>
                     <td className="product-cell" ><span className="product-stock" style={{ color: stockColor, }}>{p.currentStock}</span></td>
@@ -93,7 +96,13 @@ export default function Products() {
       {deleteId && (
         <ConfirmModal onCancel={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId)} loading={del.isPending} message="This will permanently delete the product." />
       )}
-      {editId && <ProductEditModal id={editId} onClose={() => setEditId(null)} />}
+      {editId && <ProductEditModal id={editId} onClose={() => setEditId(null)} />} 
+      
+
+      {selectedProduct && (<ProductDetailsModal product={selectedProduct} onClose={() => setSelectedProduct(null)}
+  />
+)}
+
     </AppLayout>
   );
 }
