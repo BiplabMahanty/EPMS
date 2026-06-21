@@ -108,7 +108,7 @@ export default function Inventory() {
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={6} />)}
               {!isLoading && products.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="🗄" title="No inventory data" description="Add products to track stock" /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="No inventory data" description="" /></td></tr>
               )}
               {products.map((p) => {
                 const stockStatus = p.currentStock <= 0 ? 'out' : p.currentStock <= p.lowStockThreshold ? 'low' : 'ok';

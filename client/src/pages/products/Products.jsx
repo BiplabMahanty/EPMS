@@ -57,13 +57,13 @@ export default function Products() {
                   <th className="table-header">Sale Price</th>
                   <th className="table-header">Stock</th>
                   <th className="table-header">Status</th>
-                  <th className="table-header">Actions</th>
+                  <th className="table-header"></th>
             </tr>
             </thead>
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={7} />)}
               {!isLoading && products.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="📦" title="No products yet" description="Add your first product to get started" action={<Link to="/products/new" className="btn btn-primary">Add Product</Link>} /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="" description="" action={<Link to="/products/new" className="btn btn-primary">Add Product +</Link>} /></td></tr>
               )}
               {products.map((p) => {
                 const stockColor = p.currentStock <= 0 ? 'var(--esp-danger)' : p.currentStock <= p.lowStockThreshold ? 'var(--esp-warning)' : 'var(--esp-success)';

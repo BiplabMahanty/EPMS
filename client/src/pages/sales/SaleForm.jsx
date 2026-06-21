@@ -24,7 +24,7 @@ const makeSession = (index) => ({
   note: "",
   payment: "cash",
 });
-const api =import.meta.env.VITE_API_URL;
+const api = import.meta.env.VITE_API_URL;
 
 function useDebouncedValue(value, delay = 280) {
   const [debounced, setDebounced] = useState(value);
@@ -116,24 +116,24 @@ function ProductCard({ product, onAdd, onOpen }) {
       onKeyDown={(e) => e.key === "Enter" && onOpen(product)}
     >
       <div className="pos-product-media">
-  {!!discount && <span className="pos-discount">-{discount}%</span>}
+        {!!discount && <span className="pos-discount">-{discount}%</span>}
 
-  {product?.thumbnail ? (
-    <img
-      src={`${api}${product.thumbnail}`}
-      alt={product.name}
-      className="pos-product-img"
-      loading="lazy"
-    />
-  ) : (
-    <div
-      className="pos-image-fallback pos-product-img"
-      aria-label={product?.name || "Product"}
-    >
-      {(product?.name || "P").slice(0, 2).toUpperCase()}
-    </div>
-  )}
-</div>
+        {product?.thumbnail ? (
+          <img
+            src={`${api}${product.thumbnail}`}
+            alt={product.name}
+            className="pos-product-img"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="pos-image-fallback pos-product-img"
+            aria-label={product?.name || "Product"}
+          >
+            {(product?.name || "P").slice(0, 2).toUpperCase()}
+          </div>
+        )}
+      </div>
       <div className="pos-product-body">
         <span className="pos-sku">{product.sku || "No SKU"}</span>
         <strong className="pos-product-name">{product.name}</strong>
@@ -617,8 +617,8 @@ function CartPanel({
                         patchSession({
                           taxes: checked
                             ? activeSession.taxes.filter(
-                                (item) => item._id !== tax._id,
-                              )
+                              (item) => item._id !== tax._id,
+                            )
                             : [...activeSession.taxes, tax],
                         });
                       }}
@@ -855,12 +855,12 @@ export default function SaleForm() {
     : categories.slice(0, 8);
   const scopedSubs = selectedCategory
     ? allSubs.filter(
-        (sub) => (sub.categoryId?._id || sub.categoryId) === selectedCategory,
-      )
+      (sub) => (sub.categoryId?._id || sub.categoryId) === selectedCategory,
+    )
     : [...allSubs].sort(
-        (a, b) =>
-          (counts.subCounts[b._id] || 0) - (counts.subCounts[a._id] || 0),
-      );
+      (a, b) =>
+        (counts.subCounts[b._id] || 0) - (counts.subCounts[a._id] || 0),
+    );
   const visibleSubs = subExpanded ? scopedSubs : scopedSubs.slice(0, 8);
 
   const totals = useMemo(() => {
@@ -954,12 +954,12 @@ export default function SaleForm() {
           cart: session.cart.map((item) =>
             item.product._id === product._id
               ? {
-                  ...item,
-                  qty: Math.min(
-                    item.qty + 1,
-                    Number(product.currentStock || item.qty + 1),
-                  ),
-                }
+                ...item,
+                qty: Math.min(
+                  item.qty + 1,
+                  Number(product.currentStock || item.qty + 1),
+                ),
+              }
               : item,
           ),
         };
@@ -990,12 +990,12 @@ export default function SaleForm() {
         qty <= 0
           ? session.cart.filter((item) => item.product._id !== productId)
           : session.cart.map((item) => {
-              if (item.product._id !== productId) return item;
-              return {
-                ...item,
-                qty: Math.min(qty, Number(item.product.currentStock || qty)),
-              };
-            }),
+            if (item.product._id !== productId) return item;
+            return {
+              ...item,
+              qty: Math.min(qty, Number(item.product.currentStock || qty)),
+            };
+          }),
     }));
   }
 

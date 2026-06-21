@@ -8,6 +8,7 @@ import { SkeletonRow } from '../../components/ui/Skeleton';
 import EmptyState from '../../components/ui/EmptyState';
 import { invoicesApi } from '../../services/api';
 import { formatCurrency, formatDate } from '../../utils/format';
+import InvoiceDetailsModal from '../../components/ui/InvoiceDetailsModal';
 
 export default function Sales() {
   const [status, setStatus] = useState('');
@@ -17,6 +18,8 @@ export default function Sales() {
   });
 
   const invoices = data?.docs || [];
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  
 
   return (
     <AppLayout title="Sales">
@@ -36,22 +39,23 @@ export default function Sales() {
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={6} />)}
               {!isLoading && invoices.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="🧾" title="No sales yet" action={<Link to="/sales/new" className="btn btn-primary">New Sale</Link>} /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="No sales yet" action={<Link to="/sales/new" className="btn btn-primary">New Sale</Link>} /></td></tr>
               )}
               {invoices.map((inv) => (
                 <tr key={inv._id}>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: 13 }}><Link to={`/sales/${inv._id}`} style={{ color: 'var(--esp-primary)' }}>{inv.invoiceNumber}</Link></td>
+                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: 13 }}>  {inv.invoiceNumber}</td>
                   <td style={{ fontSize: 13 }}>{formatDate(inv.date)}</td>
                   <td>{inv.party?.name}</td>
                   <td style={{ fontFamily: 'var(--font-mono)' }}>{formatCurrency(inv.grandTotal)}</td>
                   <td><Badge label={inv.status} /></td>
-                  <td><Link to={`/sales/${inv._id}`} className="btn btn-secondary btn-sm btn-action-hover">View</Link></td>
+                  <td> <button className="btn btn-secondary btn-sm btn-action-hover" onClick={() => setSelectedInvoice(inv)} > View </button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      <InvoiceDetailsModal invoice={selectedInvoice} onClose={() => setSelectedInvoice(null)}/>
     </AppLayout>
   );
 }
