@@ -153,6 +153,12 @@ export default function ProductDetailsModal({
 
                 <InfoCard label="SKU" value={product.sku} />
 
+                  {/* Udate category details in product details model */}
+                 <InfoCard label="Category" value={ product.category?.name || product.categoryName || '-' } />
+ 
+                        {/* Udate subCategory details in product details model  */}
+                 <InfoCard label="Sub Category" value={ product.subcategory?.name || product.subcategoryName || '-' }/>
+
                 <InfoCard
                   label="Sale Price"
                   value={`₹ ${product.salePrice}`}

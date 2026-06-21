@@ -36,7 +36,7 @@ export default function Purchases() {
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={6} />)}
               {!isLoading && invoices.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="🛒" title="No purchases yet" action={<Link to="/purchases/new" className="btn btn-primary">New Purchase</Link>} /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="No purchases yet" /></td></tr>
               )}
               {invoices.map((inv) => (
                 <tr key={inv._id}>

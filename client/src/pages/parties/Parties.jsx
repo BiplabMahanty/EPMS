@@ -51,7 +51,7 @@ export default function Parties() {
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={5} />)}
               {!isLoading && parties.length === 0 && (
-                <tr><td colSpan={5}><EmptyState icon="" title="" action={<button className="btn btn-primary" onClick={() => setShowAdd(true)}>Add Party +</button>} /></td></tr>
+                <tr><td colSpan={5}><EmptyState icon="" title="No parties add yet" /></td></tr>
               )}
               {parties.map((p) => (
                 <tr key={p._id}>

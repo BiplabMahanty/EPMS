@@ -39,7 +39,7 @@ export default function Sales() {
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={6} />)}
               {!isLoading && invoices.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="" title="No sales yet" action={<Link to="/sales/new" className="btn btn-primary">New Sale</Link>} /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="No sales yet"  /></td></tr>
               )}
               {invoices.map((inv) => (
                 <tr key={inv._id}>
