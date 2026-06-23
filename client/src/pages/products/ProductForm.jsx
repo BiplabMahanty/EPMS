@@ -61,13 +61,15 @@ export default function ProductForm() {
       Object.entries(data).forEach(([k, v]) => { if (v !== undefined && v !== '') fd.append(k, v); });
       imageFiles.forEach((f) => fd.append('images', f));
       for (let pair of fd.entries()) {
-    console.log(pair[0], pair[1]);
-    }
+        console.log(pair[0], pair[1]);
+      }
       return isEdit ? productsApi.update(id, fd) : productsApi.create(fd);
     },
     onSuccess: () => { toast.success(isEdit ? 'Product updated' : 'Product created'); navigate('/products'); },
     onError: (e) => toast.error(e.response?.data?.message || 'Save failed'),
   });
+
+  // New Product popup creating the code has been changes from here
 
   const [showModal, setShowModal] = useState(true);
   const [step, setStep] = useState(1);
@@ -75,300 +77,299 @@ export default function ProductForm() {
   return (
     <AppLayout title={isEdit ? 'Edit Product' : 'Add Product'}>
       <div style={{ maxWidth: 760 }}>
-        
-        
 
-          {showModal && (
-  <div className="product-modal-overlay">
-    <div className="product-modal">
 
-      <div className="product-modal-header">
-        <div>
-          <h2>{isEdit ? 'Edit Product' : 'Add New Product'}</h2>
-          <p>
-            Step {step} of 2
-          </p>
-        </div>
+        {showModal && (
+          <div className="product-modal-overlay">
+            <div className="product-modal">
 
-        <button
-        type="button"
-          className="close-btn"
-          onClick={() => navigate('/products')}
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="step-progress">
-        <div className={`step-item ${step >= 1 ? 'active' : ''}`}>
-          Basic Information
-        </div>
-
-        <div className={`step-item ${step >= 2 ? 'active' : ''}`}>
-          Pricing & Inventory
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit((d) => save.mutate(d))}>
-        
-        {/* STEP 1 */}
-
-        {step === 1 && (
-          <>
-            <div className="card card-body">
-
-              <ImageUpload
-                label="Product Images"
-                multiple
-                maxFiles={5}
-                onChange={setImageFiles}
-              />
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">
-                    Product Name *
-                  </label>
-
-                  <Input
-                    {...register('name')}
-                    error={errors.name?.message}
-                  />
+              <div className="product-modal-header">
+                <div>
+                  <h2>{isEdit ? 'Edit Product' : 'Add New Product'}</h2>
+                  <p>
+                    Step {step} of 2
+                  </p>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
-                    Product ID
-                  </label>
+                <button
+                  type="button"
+                  className="close-btn"
+                  onClick={() => navigate('/products')}
+                >
+                  ✕
+                </button>
+              </div>
 
-                  <Input {...register('sku')} />
+              <div className="step-progress">
+                <div className={`step-item ${step >= 1 ? 'active' : ''}`}>
+                  Basic Information
+                </div>
+
+                <div className={`step-item ${step >= 2 ? 'active' : ''}`}>
+                  Pricing & Inventory
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">
-                    Barcode
-                  </label>
+              <form onSubmit={handleSubmit((d) => save.mutate(d))}>
 
-                  <Input {...register('barcode')} />
-                </div>
+                {/* STEP 1 */}
 
-                <div className="form-group">
-                  <label className="form-label">
-                    Unit
-                  </label>
+                {step === 1 && (
+                  <>
+                    <div className="card card-body">
 
-                  <Select {...register('unit')}>
-                    <option value="">Select Unit</option>
-                    {units.map((u) => (
-                      <option key={u._id} value={u._id}>
-                        {u.name} ({u.symbol})
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
+                      <ImageUpload
+                        label="Product Images"
+                        multiple
+                        maxFiles={5}
+                        onChange={setImageFiles}
+                      />
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">
-                    Category
-                  </label>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">
+                            Product Name *
+                          </label>
 
-                  <Select {...register('category')}>
-                    <option value="">
-                      Select Category
-                    </option>
+                          <Input
+                            {...register('name')}
+                            error={errors.name?.message}
+                          />
+                        </div>
 
-                    {categories.map((c) => (
-                      <option
-                        key={c._id}
-                        value={c._id}
+                        <div className="form-group">
+                          <label className="form-label">
+                            Product ID
+                          </label>
+
+                          <Input {...register('sku')} />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">
+                            Barcode
+                          </label>
+
+                          <Input {...register('barcode')} />
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">
+                            Unit
+                          </label>
+
+                          <Select {...register('unit')}>
+                            <option value="">Select Unit</option>
+                            {units.map((u) => (
+                              <option key={u._id} value={u._id}>
+                                {u.name} ({u.symbol})
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">
+                            Category
+                          </label>
+
+                          <Select {...register('category')}>
+                            <option value="">
+                              Select Category
+                            </option>
+
+                            {categories.map((c) => (
+                              <option
+                                key={c._id}
+                                value={c._id}
+                              >
+                                {c.name}
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+
+                        <div className="form-group">
+                          <label className="form-label">
+                            Subcategory
+                          </label>
+
+                          <Select
+                            {...register('subcategory')}
+                            disabled={!selectedCategory}
+                          >
+                            <option value="">
+                              Select Subcategory
+                            </option>
+
+                            {subcategories.map((s) => (
+                              <option
+                                key={s._id}
+                                value={s._id}
+                              >
+                                {s.name}
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">
+                          Description
+                        </label>
+
+                        <Textarea
+                          {...register('description')}
+                          rows={4}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="modal-footer">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => navigate('/products')}
                       >
-                        {c.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
+                        Cancel
+                      </Button>
 
-                <div className="form-group">
-                  <label className="form-label">
-                    Subcategory
-                  </label>
-
-                  <Select
-                    {...register('subcategory')}
-                    disabled={!selectedCategory}
-                  >
-                    <option value="">
-                      Select Subcategory
-                    </option>
-
-                    {subcategories.map((s) => (
-                      <option
-                        key={s._id}
-                        value={s._id}
+                      <Button
+                        type="button"
+                        onClick={() => setStep(2)}
                       >
-                        {s.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
+                        Next →
+                      </Button>
+                    </div>
+                  </>
+                )}
 
-              <div className="form-group">
-                <label className="form-label">
-                  Description
-                </label>
+                {/* STEP 2 */}
 
-                <Textarea
-                  {...register('description')}
-                  rows={4}
-                />
-              </div>
+                {step === 2 && (
+                  <>
+                    <div className="card card-body">
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Sale Price *</label>
+                          <Input
+                            {...register('salePrice')}
+                            type="number"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Purchase Price</label>
+                          <Input
+                            {...register('purchasePrice')}
+                            type="number"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>MRP</label>
+                          <Input
+                            {...register('mrp')}
+                            type="number"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>GST Rate</label>
+
+                          <Select {...register('gstRate')}>
+                            {[0, 5, 12, 18, 28].map((r) => (
+                              <option
+                                key={r}
+                                value={r}
+                              >
+                                {r}%
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>HSN Code</label>
+                          <Input {...register('hsnCode')} />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Opening Stock</label>
+                          <Input
+                            {...register('currentStock')}
+                            type="number"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Low Stock Alert</label>
+                          <Input
+                            {...register('lowStockThreshold')}
+                            type="number"
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label>Reorder Level</label>
+                          <Input
+                            {...register('reorderLevel')}
+                            type="number"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Status</label>
+
+                        <Select {...register('status')}>
+                          <option value="active">
+                            Active
+                          </option>
+
+                          <option value="inactive">
+                            Inactive
+                          </option>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="modal-footer">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setStep(1)}
+                      >
+                        ← Back
+                      </Button>
+
+                      <Button
+                        type="submit"
+                        loading={save.isPending}
+                      >
+                        Save Product
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+              </form>
             </div>
-
-            <div className="modal-footer">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </Button>
-
-              <Button
-                type="button"
-                onClick={() => setStep(2)}
-              >
-                Next →
-              </Button>
-            </div>
-          </>
+          </div>
         )}
 
-        {/* STEP 2 */}
-
-        {step === 2 && (
-          <>
-            <div className="card card-body">
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Sale Price *</label>
-                  <Input
-                    {...register('salePrice')}
-                    type="number"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Purchase Price</label>
-                  <Input
-                    {...register('purchasePrice')}
-                    type="number"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>MRP</label>
-                  <Input
-                    {...register('mrp')}
-                    type="number"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>GST Rate</label>
-
-                  <Select {...register('gstRate')}>
-                    {[0, 5, 12, 18, 28].map((r) => (
-                      <option
-                        key={r}
-                        value={r}
-                      >
-                        {r}%
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>HSN Code</label>
-                  <Input {...register('hsnCode')} />
-                </div>
-
-                <div className="form-group">
-                  <label>Opening Stock</label>
-                  <Input
-                    {...register('currentStock')}
-                    type="number"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Low Stock Alert</label>
-                  <Input
-                    {...register('lowStockThreshold')}
-                    type="number"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Reorder Level</label>
-                  <Input
-                    {...register('reorderLevel')}
-                    type="number"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Status</label>
-
-                <Select {...register('status')}>
-                  <option value="active">
-                    Active
-                  </option>
-
-                  <option value="inactive">
-                    Inactive
-                  </option>
-                </Select>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setStep(1)}
-              >
-                ← Back
-              </Button>
-
-              <Button
-                type="submit"
-                loading={save.isPending}
-              >
-                Save Product
-              </Button>
-            </div>
-          </>
-        )}
-
-      </form>
-    </div>
-  </div>
-)}
-      
       </div>
     </AppLayout>
   );
