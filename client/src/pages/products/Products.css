@@ -7,14 +7,14 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow:
-    0 4px 20px rgba(0,0,0,0.06),
+    0 4px 20px rgba(255, 0, 0, 0.06),
     0 1px 3px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
 
 .card:hover {
   box-shadow:
-    0 12px 35px rgba(0,0,0,0.12),
+    0 12px 35px rgba(178, 8, 8, 0.12),
     0 4px 10px rgba(0,0,0,0.08);
 }
 
@@ -34,15 +34,12 @@
 ========================== */
 
 .esp-table thead {
-  background: linear-gradient(
-    135deg,
-    #2b00d8,
-    #070148
+  background: linear-gradient(135deg, #1E293B 0%, #334155 50%, #475569 100%
   );
 }
 
 .esp-table th {
-  color: white;
+  color: rgb(255, 255, 255);
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.4px;
@@ -96,8 +93,8 @@
 ========================== */
 
 .product-image {
-  width: 55px;
-  height: 55px;
+  width: 45px;
+  height: 45px;
   border-radius: 14px;
   object-fit: cover;
   border: 2px solid #e5e7eb;
@@ -108,7 +105,7 @@
 .product-image:hover {
   transform: scale(1.15) rotate(3deg);
   box-shadow:
-    0 10px 25px rgba(37,99,235,0.25);
+    0 10px 25px rgba(0, 3, 0, 0.314);
   border-color: #2563eb;
 }
 
@@ -248,4 +245,211 @@ td > div {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+/* 
+edit & delete buttons */
+
+.premium-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  transform: translateY(0);
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #00ff1e, #00a113);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #fd8b00, #ad4c03);
+  box-shadow: 0 4px 12px rgba(239,68,68,0.25);
+}
+
+/* Sliding Shine Effect */
+.premium-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: rgba(255,255,255,0.25);
+  transform: skewX(-25deg);
+  transition: all 0.6s ease;
+}
+
+.premium-btn:hover::before {
+  left: 130%;
+}
+
+.premium-btn:hover {
+  transform: translateY(-3px);
+}
+
+.edit-btn:hover {
+  box-shadow: 0 10px 24px rgba(59,130,246,0.4);
+  background: linear-gradient(135deg, #0011ff, #020039);
+}
+
+.delete-btn:hover {
+  box-shadow: 0 10px 24px rgba(239,68,68,0.4);
+  background: linear-gradient(135deg, #ff0000, #210000);
+}
+
+.premium-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.premium-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0)
+  );
+  pointer-events: none;
+}
+
+/* Cetagory and add product btn  */
+
+/* Container Buttons */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  /* Glass Effect */
+  background: linear-gradient(
+    135deg,
+    #1E293B 0%,
+    #334155 50%,
+    #475569 100%
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 8px 32px rgba(255, 255, 255, 0.35),
+    inset 0 1px 0 rgba(72, 62, 62, 0.15);
+
+  color: #fff;
+}
+
+/* Shine Effect */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: 0.8s;
+}
+
+/* Animated Glow Ring */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.15),
+    transparent,
+    rgba(255,255,255,0.08)
+  );
+  opacity: 0;
+  transition: 0.4s ease;
+  z-index: -1;
+}
+
+/* Hover Effects */
+.btn:hover {
+  transform: translateY(-4px) scale(1.03);
+
+  box-shadow:
+    0 15px 40px rgba(255, 255, 255, 0.5),
+    0 0 30px rgba(71, 85, 105, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn:hover::before {
+  left: 140%;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+.btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Optional Different Styling for Primary Button */
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    #1E293B 0%,
+    #334155 50%,
+    #475569 100%
+  );
+}
+
+/* Optional Different Styling for Secondary Button */
+.btn-secondary {
+  background: linear-gradient(
+    135deg,
+    #1E293B 0%,
+    #334155 50%,
+    #475569 100%
+  );
+}
+
+/* Floating Animation */
+@keyframes floatBtn {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.btn-action-hover {
+  animation: floatBtn 3s ease-in-out infinite;
 }

@@ -51,19 +51,19 @@ export default function Products() {
           <table className="esp-table">
             <thead>
               <tr>
-              <th className = "table-header">Image</th>
-              <th className="table-header">Name</th>
-                  <th className="table-header">Product ID</th>
-                  <th className="table-header">Sale Price</th>
-                  <th className="table-header">Stock</th>
-                  <th className="table-header">Status</th>
-                  <th className="table-header"></th>
-            </tr>
+                <th className="table-header">Image</th>
+                <th className="table-header">Name</th>
+                <th className="table-header">Product ID</th>
+                <th className="table-header">Sale Price</th>
+                <th className="table-header">Stock</th>
+                <th className="table-header">Status</th>
+                <th className="table-header"></th>
+              </tr>
             </thead>
             <tbody>
               {isLoading && Array(5).fill(0).map((_, i) => <SkeletonRow key={i} cols={7} />)}
               {!isLoading && products.length === 0 && (
-                <tr><td colSpan={6}><EmptyState icon="" title="" description="" action={<Link to="/products/new" className="btn btn-primary">Add Product +</Link>} /></td></tr>
+                <tr><td colSpan={6}><EmptyState icon="" title="" description="" action={<Link to="/products/new"  className="btn btn-primary">Add Product +</Link>} /></td></tr>
               )}
               {products.map((p) => {
                 const stockColor = p.currentStock <= 0 ? 'var(--esp-danger)' : p.currentStock <= p.lowStockThreshold ? 'var(--esp-warning)' : 'var(--esp-success)';
@@ -74,15 +74,15 @@ export default function Products() {
                         console.log('Image failed:', `${API_URL}${p.thumbnail}`);
                         e.target.style.display = 'none';
                       }} />) : (<span>No Image</span>)} </td>
-                    <td className="product-name" > <span className='product-link' onClick={()=> setSelectedProduct(p)}>{p.name}</span></td>
+                    <td className="product-name" > <span className='product-link' onClick={() => setSelectedProduct(p)}>{p.name}</span></td>
                     <td className="product-sku" >{p.sku}</td>
                     <td className="product-price" >{formatCurrency(p.salePrice)}</td>
                     <td className="product-cell" ><span className="product-stock" style={{ color: stockColor, }}>{p.currentStock}</span></td>
                     <td className="product-status"><Badge label={p.status} /></td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="btn btn-secondary btn-sm btn-action-hover" onClick={() => setEditId(p._id)}>Edit</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(p._id)}>Del</button>
+                        <button className="premium-btn edit-btn" onClick={() => setEditId(p._id)} >Edit</button>
+                        <button className="premium-btn delete-btn" onClick={() => setDeleteId(p._id)}>Del</button>
                       </div>
                     </td>
                   </tr>
@@ -96,12 +96,12 @@ export default function Products() {
       {deleteId && (
         <ConfirmModal onCancel={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId)} loading={del.isPending} message="This will permanently delete the product." />
       )}
-      {editId && <ProductEditModal id={editId} onClose={() => setEditId(null)} />} 
-      
+      {editId && <ProductEditModal id={editId} onClose={() => setEditId(null)} />}
+
 
       {selectedProduct && (<ProductDetailsModal product={selectedProduct} onClose={() => setSelectedProduct(null)}
-  />
-)}
+      />
+      )}
 
     </AppLayout>
   );

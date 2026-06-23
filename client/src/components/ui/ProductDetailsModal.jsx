@@ -27,7 +27,7 @@ export default function ProductDetailsModal({
         {/* HEADER */}
 
         <div style={{
-          background: 'linear-gradient(135deg,#2563EB 0%,#4F46E5 50%,#7C3AED 100%)', padding: '28px 35px', color: '#fff',
+    background: 'linear-gradient(135deg, #1E293B 0%, #334155 50%, #475569 100%)', padding: '28px 35px', color: '#fff',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '24px 24px 0 0',
         }} >
           <div>
@@ -151,7 +151,7 @@ export default function ProductDetailsModal({
               >
                 <InfoCard label="Product Name" value={product.name} />
 
-                <InfoCard label="SKU" value={product.sku} />
+                <InfoCard label="Product ID" value={product.sku} />
 
                   {/* Udate category details in product details model */}
                  <InfoCard label="Category" value={ product.category?.name || product.categoryName || '-' } />
