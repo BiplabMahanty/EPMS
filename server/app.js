@@ -60,7 +60,7 @@ app.use('/api/reports', require('./routes/report.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
 app.use('/api/taxes', require('./routes/tax.routes'));
 app.use('/api/employee', require('./routes/employee.routes'));
-app.use('/api/employees', require('./routes/employeeAdmin.routes'));
+app.use('/api/dashboard', require('./routes/dashboard.router'));
 
 // 404 handler
 app.all('*', (req, res) => res.status(404).json({ message: `Route ${req.originalUrl} not found` }));

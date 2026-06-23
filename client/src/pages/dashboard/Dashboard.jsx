@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import AppLayout from '../../components/layout/AppLayout';
 import { SkeletonCard } from '../../components/ui/Skeleton';
-import { reportsApi, invoicesApi } from '../../services/api';
+import { reportsApi, invoicesApi ,dashboardApi} from '../../services/api';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Badge from '../../components/ui/Badge';
 
@@ -31,6 +31,12 @@ export default function Dashboard() {
     queryKey: ['invoices-recent'],
     queryFn: () => invoicesApi.list({ limit: 10 }).then((r) => r.data),
   });
+
+  const { data: countsData } = useQuery({
+  queryKey: ['dashboard-counts'],
+  queryFn: () =>
+    dashboardApi.counts().then((r) => r.data),
+});
 
   const loading = salesLoading || purchaseLoading;
 
@@ -63,15 +69,82 @@ export default function Dashboard() {
         </div>
 
         <div className="card">
-          <div className="card-header"><span style={{ fontWeight: 600 }}>Quick Actions</span></div>
-          <div className="card-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="card-header">
+            <span style={{ fontWeight: 600 }}>Business Overview</span>
+          </div>
+
+          <div
+            className="card-body"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 12,
+            }}
+          >
             {[
-              { to: '/sales/new', label: '+ New Sale', color: 'var(--esp-primary)' },
-              { to: '/products/new', label: '+ Add Product', color: 'var(--esp-success)' },
-              { to: '/purchases/new', label: '+ New Purchase', color: 'var(--esp-accent)' },
-              { to: '/parties/new', label: '+ Add Party', color: 'var(--esp-text-secondary)' },
-            ].map(({ to, label, color }) => (
-              <Link key={to} to={to} className="btn btn-quick-action" style={{ '--quick-action-color': color }}>{label}</Link>
+  {
+    label: 'Employees',
+    count: countsData?.data?.employees || 0,
+  },
+  {
+    label: 'Suppliers',
+    count: countsData?.data?.suppliers || 0,
+  },
+  {
+    label: 'Customers',
+    count: countsData?.data?.customers || 0,
+  },
+  {
+    label: 'Products',
+    count: countsData?.data?.products || 0,
+  },
+].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  border: '1px solid var(--esp-border)',
+                  borderRadius: 12,
+                  padding: 16,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 6,
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--esp-surface)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow =
+                    '0 8px 20px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.borderColor = 'var(--esp-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'var(--esp-border)';
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--esp-primary)',
+                  }}
+                >
+                  {item.count}
+                </span>
+
+                <span
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--esp-text-muted)',
+                  }}
+                >
+                  {item.label}
+                </span>
+              </div>
             ))}
           </div>
         </div>

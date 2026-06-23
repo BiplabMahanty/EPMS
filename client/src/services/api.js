@@ -44,6 +44,10 @@ empApi.interceptors.response.use(
 
 export default api;
 
+export const dashboardApi = {
+  counts: () => api.get('/dashboard/counts'),
+};
+
 export const authApi = {
   register: (d) => api.post('/auth/register', d),
   login: (d) => api.post('/auth/login', d),
