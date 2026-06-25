@@ -47,7 +47,8 @@ exports.deleteParty = asyncHandler(async (req, res) => {
 
 exports.getPartyLedger = asyncHandler(async (req, res) => {
   const invoices = await Invoice.find({ party: req.params.id, businessId: req.user.businessId })
-    .select('invoiceNumber type date grandTotal amountPaid balanceDue status')
-    .sort({ date: -1 });
+    .select('invoiceNumber type date dueDate placeOfSupply lineItems subtotal totalDiscount cgst sgst igst roundOff grandTotal amountPaid balanceDue paymentMode paymentRef status notes createdAt updatedAt')
+    .populate('lineItems.product', 'name sku')
+    .sort({ date: -1, createdAt: -1 });
   res.json(invoices);
 });
