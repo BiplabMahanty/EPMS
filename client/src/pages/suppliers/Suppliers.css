@@ -1,0 +1,328 @@
+.supplier-toolbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 160px 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.supplier-click-row {
+  cursor: pointer;
+}
+
+.supplier-click-row:focus {
+  background: var(--esp-surface);
+  outline: 2px solid rgba(26, 86, 219, 0.24);
+  outline-offset: -2px;
+}
+
+.supplier-name-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--esp-text-primary);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.supplier-click-row:hover .supplier-name-button,
+.supplier-name-button:focus {
+  color: var(--esp-primary);
+}
+
+.supplier-modal {
+  max-width: 1180px;
+}
+
+.supplier-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 76vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.supplier-profile-grid,
+.supplier-summary-grid,
+.supplier-deal-summary-grid,
+.supplier-meta-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.supplier-profile-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.supplier-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.supplier-deal-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.supplier-meta-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.supplier-detail-box,
+.supplier-summary-box {
+  min-width: 0;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--esp-surface);
+}
+
+.supplier-detail-box span,
+.supplier-summary-box span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--esp-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.supplier-detail-box strong,
+.supplier-summary-box strong {
+  color: var(--esp-text-primary);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.supplier-summary-box-danger strong,
+.supplier-amount-row-danger strong {
+  color: var(--esp-danger);
+}
+
+.supplier-summary-box-success strong,
+.supplier-amount-row-success strong {
+  color: var(--esp-success);
+}
+
+.supplier-notes {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--esp-card);
+  color: var(--esp-text-secondary);
+}
+
+.supplier-deals-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.supplier-deals-header h3,
+.supplier-deal-panel h3 {
+  color: var(--esp-text-primary);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.supplier-deals-header p,
+.supplier-deal-panel-header p,
+.supplier-deal-panel-header span {
+  color: var(--esp-text-muted);
+  font-size: 13px;
+}
+
+.supplier-deal-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.supplier-deal-list {
+  display: grid;
+  gap: 8px;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.supplier-deal-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 10px;
+  width: 100%;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--esp-card);
+  color: var(--esp-text-secondary);
+  text-align: left;
+}
+
+.supplier-deal-button:hover,
+.supplier-deal-button:focus,
+.supplier-deal-button.is-active {
+  border-color: var(--esp-primary);
+  background: #eff6ff;
+  outline: none;
+}
+
+.supplier-deal-button strong,
+.supplier-deal-button span,
+.supplier-deal-button small {
+  display: block;
+}
+
+.supplier-deal-button strong {
+  color: var(--esp-text-primary);
+}
+
+.supplier-deal-button span,
+.supplier-deal-button small {
+  color: var(--esp-text-muted);
+  font-size: 12px;
+}
+
+.supplier-deal-button-money {
+  grid-column: 1 / -1;
+}
+
+.supplier-deal-button-money span {
+  color: var(--esp-text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.supplier-deal-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--esp-card);
+}
+
+.supplier-deal-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.supplier-section-title {
+  color: var(--esp-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.supplier-item-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+}
+
+.supplier-item-table th,
+.supplier-item-table td {
+  padding: 10px 12px;
+}
+
+.supplier-item-table td strong,
+.supplier-item-table td span {
+  display: block;
+}
+
+.supplier-item-table td strong {
+  color: var(--esp-text-primary);
+  font-size: 13px;
+}
+
+.supplier-item-table td span {
+  color: var(--esp-text-muted);
+  font-size: 12px;
+}
+
+.supplier-amount-breakup {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--esp-surface);
+}
+
+.supplier-amount-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--esp-text-secondary);
+}
+
+.supplier-amount-row strong {
+  color: var(--esp-text-primary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.supplier-amount-row.is-strong {
+  border-top: 1px solid var(--esp-border);
+  margin-top: 2px;
+  padding-top: 8px;
+  color: var(--esp-text-primary);
+  font-weight: 700;
+}
+
+.supplier-ledger-empty {
+  border: 1px dashed var(--esp-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  color: var(--esp-text-muted);
+  text-align: center;
+}
+
+.supplier-deal-button.is-loading,
+.supplier-deal-panel.is-loading {
+  height: 74px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.supplier-deal-panel.is-loading {
+  min-height: 320px;
+}
+
+@media (max-width: 1100px) {
+  .supplier-summary-grid,
+  .supplier-deal-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .supplier-deal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .supplier-deal-list {
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 720px) {
+  .supplier-toolbar,
+  .supplier-profile-grid,
+  .supplier-summary-grid,
+  .supplier-deal-summary-grid,
+  .supplier-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .supplier-deal-panel-header {
+    display: grid;
+  }
+}

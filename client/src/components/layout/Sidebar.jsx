@@ -11,6 +11,7 @@ const NAV = [
   { to: '/products', label: 'Products', icon: '📦' },
   { to: '/inventory', label: 'Inventory', icon: '🗄', perm: 'canManageStock' },
   { to: '/parties', label: 'Parties', icon: '👥' },
+  { to: '/suppliers', label: 'Suppliers', icon: 'S' },
   { to: '/sales', label: 'Sales', icon: '🧾', perm: 'canCreateInvoice' },
   { to: '/purchases', label: 'Purchases', icon: '🛒', perm: 'canAddPurchase' },
   { to: '/reports/sales', label: 'Reports', icon: '📊', perm: 'canViewSalesReport' },

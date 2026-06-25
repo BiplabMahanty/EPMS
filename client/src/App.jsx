@@ -17,6 +17,7 @@ const Categories = lazy(() => import('./pages/products/Categories'));
 const Inventory = lazy(() => import('./pages/inventory/Inventory'));
 const Parties = lazy(() => import('./pages/parties/Parties'));
 const PartyForm = lazy(() => import('./pages/parties/PartyForm'));
+const Suppliers = lazy(() => import('./pages/suppliers/Suppliers'));
 const Sales = lazy(() => import('./pages/sales/Sales'));
 const SaleForm = lazy(() => import('./pages/sales/SaleForm'));
 const Purchases = lazy(() => import('./pages/purchases/Purchases'));
@@ -65,6 +66,7 @@ export default function App() {
             <Route path="/parties" element={<ProtectedRoute><Parties /></ProtectedRoute>} />
             <Route path="/parties/new" element={<ProtectedRoute><PartyForm /></ProtectedRoute>} />
             <Route path="/parties/:id" element={<ProtectedRoute><PartyForm /></ProtectedRoute>} />
+            <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
             <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
             <Route path="/sales/new" element={<ProtectedRoute permission="canCreateInvoice"><SaleForm /></ProtectedRoute>} />
             <Route path="/sales/:id" element={<ProtectedRoute><SaleForm /></ProtectedRoute>} />
