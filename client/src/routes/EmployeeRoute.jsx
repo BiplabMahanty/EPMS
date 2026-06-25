@@ -3,6 +3,6 @@ import { useEmployeeStore } from '../store';
 
 export default function EmployeeRoute({ children }) {
   const isAuthenticated = useEmployeeStore((s) => s.isAuthenticated);
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) return <Navigate to="/employee-login" replace />;
   return children;
 }

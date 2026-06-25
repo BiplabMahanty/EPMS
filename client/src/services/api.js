@@ -67,6 +67,9 @@ export const employeeAuthApi = {
   checkIn: () => empApi.post('/employees/attendance/checkin'),
   checkOut: () => empApi.post('/employees/attendance/checkout'),
   attendanceHistory: (params) => empApi.get('/employees/attendance/history', { params }),
+  getSales: (params) => empApi.get('/employee/sales', { params }),
+  getSale: (id) => empApi.get(`/employee/sales/${id}`),
+  createSale: (d) => empApi.post('/employee/sales', d),
 };
 
 export const productsApi = {
@@ -142,6 +145,16 @@ export const taxApi = {
   update: (id, d) => api.patch(`/taxes/${id}`, d),
   delete: (id) => api.delete(`/taxes/${id}`),
 };
+
+// empApi versions for POS used by employee
+export const empProductsApi = { list: (params) => empApi.get('/products', { params }) };
+export const empCategoriesApi = {
+  list: () => empApi.get('/categories'),
+  listSubs: (params) => empApi.get('/subcategories', { params }),
+};
+export const empPartiesApi = { list: (params) => empApi.get('/parties', { params }) };
+export const empTaxApi = { list: () => empApi.get('/taxes') };
+export const empInvoicesApi = { list: (params) => empApi.get('/invoices', { params }) };
 
 export const settingsApi = {
   getBusiness: () => api.get('/settings/business'),

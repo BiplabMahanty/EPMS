@@ -4,6 +4,7 @@ const Employee = require('../models/Employee');
 const Invoice = require('../models/Invoice');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
+const generateInvoiceNumber = require('../utils/generateInvoiceNumber');
 
 const signAccessToken = (id) => ({
   accessToken: jwt.sign({ id, type: 'employee' }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }),
@@ -86,4 +87,32 @@ exports.changePassword = asyncHandler(async (req, res) => {
   emp.passwordHash = await bcrypt.hash(newPassword, 12);
   await emp.save();
   res.json({ message: 'Password updated' });
+});
+
+// Sales
+exports.getSales = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20, from, to, search } = req.query;
+  const query = { businessId: req.employee.businessId, createdBy: req.employee._id, type: 'sale' };
+  if (from || to) { query.createdAt = {}; if (from) query.createdAt.$gte = new Date(from); if (to) query.createdAt.$lte = new Date(to); }
+  if (search) query.invoiceNumber = { $regex: search, $options: 'i' };
+  const result = await Invoice.paginate(query, { page: +page, limit: +limit, populate: { path: 'party', select: 'name phone' }, sort: { createdAt: -1 } });
+  res.json(result);
+});
+
+exports.getSale = asyncHandler(async (req, res) => {
+  const invoice = await Invoice.findOne({ _id: req.params.id, businessId: req.employee.businessId, createdBy: req.employee._id }).populate('party', 'name phone');
+  if (!invoice) throw new AppError('Sale not found', 404);
+  res.json(invoice);
+});
+
+exports.createSale = asyncHandler(async (req, res) => {
+  const { party, date, lineItems, paymentMode, amountPaid, status, notes, discount, taxes, roundOff } = req.body;
+  if (!party || !lineItems?.length) throw new AppError('Party and line items are required', 400);
+  const saleDate = date || new Date();
+  const invoiceNumber = await generateInvoiceNumber(req.employee.businessId, 'sale', saleDate);
+  const invoice = await Invoice.create({
+    invoiceNumber, type: 'sale', party, date: saleDate, lineItems, paymentMode, amountPaid, status: status || 'paid',
+    notes, discount, taxes, roundOff, businessId: req.employee.businessId, createdBy: req.employee._id,
+  });
+  res.status(201).json(invoice);
 });

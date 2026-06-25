@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/authenticate');
+const authenticateAny = require('../middleware/authenticateAny');
 const checkPermission = require('../middleware/checkPermission');
 const { uploadMultipleFor } = require('../middleware/upload');
 const ctrl = require('../controllers/product.controller');
 
+router.get('/', authenticateAny, ctrl.getProducts);
+router.get('/:id', authenticateAny, ctrl.getProduct);
 router.use(authenticate);
 router.get('/', ctrl.getProducts);
 router.post('/', checkPermission('canAddProduct'), ...uploadMultipleFor('products', 'images', 5), ctrl.createProduct);

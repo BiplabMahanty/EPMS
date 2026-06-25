@@ -6,10 +6,10 @@ import {
   invoicesApi,
   partiesApi,
   productsApi,
-  settingsApi,
   taxApi,
 } from "../../services/api";
-import { useAuthStore } from "../../store";
+import { useAuthStore, useEmployeeStore } from '../../store';
+import { employeeAuthApi, empProductsApi, empCategoriesApi, empPartiesApi, empTaxApi, empInvoicesApi } from '../../services/api';
 import { formatCurrency } from "../../utils/format";
 
 const PAGE_SIZE = 24;
@@ -234,7 +234,7 @@ function ProductModal({ product, onClose, onAdd }) {
   );
 }
 
-function SearchOverlay({ open, onClose, onAdd }) {
+function SearchOverlay({ open, onClose, onAdd, productsApi: _productsApi }) {
   const [term, setTerm] = useState("");
   const debounced = useDebouncedValue(term);
   const inputRef = useRef(null);
@@ -244,19 +244,19 @@ function SearchOverlay({ open, onClose, onAdd }) {
     enabled: open && debounced.trim().length > 0,
     queryFn: async () => {
       const requests = await Promise.allSettled([
-        productsApi.list({
+        _productsApi.list({
           search: debounced,
           status: "active",
           limit: 12,
           page: 1,
         }),
-        productsApi.list({
+        _productsApi.list({
           sku: debounced,
           status: "active",
           limit: 12,
           page: 1,
         }),
-        productsApi.list({
+        _productsApi.list({
           barcode: debounced,
           status: "active",
           limit: 12,
@@ -338,7 +338,7 @@ function SearchOverlay({ open, onClose, onAdd }) {
   );
 }
 
-function CustomerSelector({ session, onPatch }) {
+function CustomerSelector({ session, onPatch, partiesApi: _partiesApi }) {
   const [term, setTerm] = useState("");
   const [open, setOpen] = useState(false);
   const debounced = useDebouncedValue(term);
@@ -348,7 +348,7 @@ function CustomerSelector({ session, onPatch }) {
     queryKey: ["pos-parties", debounced],
     enabled: open,
     queryFn: () =>
-      partiesApi
+      _partiesApi
         .list({ search: debounced, limit: 10 })
         .then((res) =>
           (res.data.docs || []).filter((p) => p.type === "customer" || p.type === "both"),
@@ -438,6 +438,7 @@ function CartPanel({
   onCheckout,
   checkoutLoading,
   taxOptions,
+  partiesApi: _partiesApi,
 }) {
   const [renaming, setRenaming] = useState(null);
   const [renameValue, setRenameValue] = useState("");
@@ -503,7 +504,7 @@ function CartPanel({
         </button>
       </div>
 
-      <CustomerSelector session={activeSession} onPatch={patchSession} />
+      <CustomerSelector session={activeSession} onPatch={patchSession} partiesApi={_partiesApi} />
 
       <section className="pos-cart">
         <div className="pos-cart-head">
@@ -718,8 +719,12 @@ function CartPanel({
   );
 }
 
-export default function SaleForm() {
-  const user = useAuthStore((state) => state.user);
+export function POSView({ user, createSale, apis }) {
+  const _products = apis?.products || productsApi;
+  const _categories = apis?.categories || categoriesApi;
+  const _parties = apis?.parties || partiesApi;
+  const _tax = apis?.tax || taxApi;
+  const _invoices = apis?.invoices || invoicesApi;
   const qc = useQueryClient();
   const [sessions, setSessions] = useState([makeSession(1)]);
   const [activeId, setActiveId] = useState(() => sessions[0].id);
@@ -741,7 +746,7 @@ export default function SaleForm() {
 
   const { data: taxOptions = [] } = useQuery({
     queryKey: ["pos-taxes"],
-    queryFn: () => taxApi.list().then((res) => res.data),
+    queryFn: () => _tax.list().then((res) => res.data),
   });
 
   const taxApplied = useRef(false);
@@ -759,7 +764,7 @@ export default function SaleForm() {
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["pos-categories"],
     queryFn: () =>
-      categoriesApi
+      _categories
         .list()
         .then((res) =>
           Array.isArray(res.data) ? res.data : res.data.docs || [],
@@ -770,7 +775,7 @@ export default function SaleForm() {
   const { data: allSubs = [] } = useQuery({
     queryKey: ["pos-subcategories-all"],
     queryFn: () =>
-      categoriesApi
+      _categories
         .listSubs()
         .then((res) =>
           Array.isArray(res.data) ? res.data : res.data.docs || [],
@@ -781,7 +786,7 @@ export default function SaleForm() {
   const { data: countCatalog } = useQuery({
     queryKey: ["pos-products-count-catalog"],
     queryFn: () =>
-      productsApi
+      _products
         .list({ status: "active", limit: 1000, page: 1 })
         .then((res) => res.data.docs || []),
   });
@@ -789,7 +794,7 @@ export default function SaleForm() {
   const { data: recentSales = [] } = useQuery({
     queryKey: ["pos-recent-sales"],
     queryFn: () =>
-      invoicesApi
+      _invoices
         .list({ type: "sale", limit: 200, page: 1 })
         .then((res) => res.data.docs || []),
   });
@@ -801,7 +806,7 @@ export default function SaleForm() {
   } = useQuery({
     queryKey: ["pos-products", page, selectedCategory, selectedSubcategory],
     queryFn: () =>
-      productsApi
+      _products
         .list({
           page,
           limit: PAGE_SIZE,
@@ -1021,7 +1026,7 @@ export default function SaleForm() {
         (sum, tax) => sum + Number(tax.rate || 0),
         0,
       );
-      return invoicesApi.create({
+      return createSale({
         type: "sale",
         party: activeSession.customer._id,
         date: new Date().toISOString().slice(0, 10),
@@ -1303,12 +1308,14 @@ export default function SaleForm() {
         onCheckout={() => checkout.mutate()}
         checkoutLoading={checkout.isPending}
         taxOptions={taxOptions}
+        partiesApi={_parties}
       />
 
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
         onAdd={addToCart}
+        productsApi={_products}
       />
       <ProductModal
         product={detailProduct}
@@ -1555,3 +1562,14 @@ const POS_STYLES = `
     .pos-search-item b, .pos-search-item button { grid-column: 2; justify-self: start; min-height: 32px; }
   }
 `;
+
+export default function SaleForm() {
+  const adminUser = useAuthStore((s) => s.user);
+  const employee = useEmployeeStore((s) => s.employee);
+  const isEmployee = useEmployeeStore((s) => s.isAuthenticated);
+  const user = isEmployee ? employee : adminUser;
+  const createSale = isEmployee
+    ? (d) => employeeAuthApi.createSale(d)
+    : (d) => invoicesApi.create(d);
+  return <POSView user={user} createSale={createSale} />;
+}
