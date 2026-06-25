@@ -7,8 +7,9 @@ export const setAccessToken = (token) => { accessToken = token; };
 export const getAccessToken = () => accessToken;
 export const setEmployeeAccessToken = (token) => { employeeAccessToken = token; };
 
-const api = axios.create({ baseURL: '/api', withCredentials: true });
-export const empApi = axios.create({ baseURL: '/api', withCredentials: true });
+const BASE = import.meta.env.VITE_BACKEND_URL 
+const api = axios.create({ baseURL: `${BASE}api`, withCredentials: true });
+export const empApi = axios.create({ baseURL: `${BASE}/api`, withCredentials: true });
 
 api.interceptors.request.use((config) => {
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
