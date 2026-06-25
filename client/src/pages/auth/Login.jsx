@@ -14,6 +14,8 @@ export default function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
 
+  console.log('VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL); // Log the backend URL for debugging
+
   const onSubmit = async (data) => {
     try {
       if (role === 'admin') {
