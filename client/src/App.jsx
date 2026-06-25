@@ -4,6 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './routes/ProtectedRoute';
 import EmployeeRoute from './routes/EmployeeRoute';
+import { useAuthStore, useEmployeeStore } from './store';
+
+function SaleRoute({ children }) {
+  const adminAuth = useAuthStore((s) => s.isAuthenticated);
+  const empAuth = useEmployeeStore((s) => s.isAuthenticated);
+  if (!adminAuth && !empAuth) return <Navigate to="/login" replace />;
+  return children;
+}
 import './styles/global.css';
 import './styles/components.css';
 
@@ -39,6 +47,8 @@ const EmployeeDashboard = lazy(() => import('./pages/employee/EmployeeDashboard'
 const EmployeeOrders = lazy(() => import('./pages/employee/EmployeeOrders'));
 const EmployeeProfile = lazy(() => import('./pages/employee/EmployeeProfile'));
 const EmployeeAttendance = lazy(() => import('./pages/employee/EmployeeAttendance'));
+const EmployeeSales = lazy(() => import('./pages/employee/EmployeeSales'));
+const EmployeeSaleForm = lazy(() => import('./pages/employee/EmployeeSaleForm'));
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30000 } } });
 const Loading = () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--esp-text-muted)' }}>Loading…</div>;
@@ -68,7 +78,7 @@ export default function App() {
             <Route path="/parties/:id" element={<ProtectedRoute><PartyForm /></ProtectedRoute>} />
             <Route path="/suppliers" element={<ProtectedRoute><Suppliers /></ProtectedRoute>} />
             <Route path="/sales" element={<ProtectedRoute><Sales /></ProtectedRoute>} />
-            <Route path="/sales/new" element={<ProtectedRoute permission="canCreateInvoice"><SaleForm /></ProtectedRoute>} />
+            <Route path="/sales/new" element={<SaleRoute><SaleForm /></SaleRoute>} />
             <Route path="/sales/:id" element={<ProtectedRoute><SaleForm /></ProtectedRoute>} />
             <Route path="/purchases" element={<ProtectedRoute><Purchases /></ProtectedRoute>} />
             <Route path="/purchases/new" element={<ProtectedRoute permission="canAddPurchase"><PurchaseForm /></ProtectedRoute>} />
@@ -89,6 +99,9 @@ export default function App() {
             <Route path="/employee/orders" element={<EmployeeRoute><EmployeeOrders /></EmployeeRoute>} />
             <Route path="/employee/profile" element={<EmployeeRoute><EmployeeProfile /></EmployeeRoute>} />
             <Route path="/employee/attendance" element={<EmployeeRoute><EmployeeAttendance /></EmployeeRoute>} />
+            <Route path="/employee/sales" element={<EmployeeRoute><EmployeeSales /></EmployeeRoute>} />
+            <Route path="/employee/sales/new" element={<EmployeeRoute><EmployeeSaleForm /></EmployeeRoute>} />
+            <Route path="/employee/sales/:id" element={<EmployeeRoute><EmployeeSaleForm /></EmployeeRoute>} />
           </Routes>
         </Suspense>
       </BrowserRouter>

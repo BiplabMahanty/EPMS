@@ -275,7 +275,7 @@ return (
             lineHeight: 1.8,
           }}
         >
-          New business?{' '}
+          <Link to="/employee-login">New business?</Link>?{' '}
           <Link
             to="/register"
             style={{

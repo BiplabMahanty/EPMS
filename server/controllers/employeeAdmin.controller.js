@@ -24,22 +24,107 @@ exports.get = asyncHandler(async (req, res) => {
 });
 
 exports.create = asyncHandler(async (req, res) => {
-  const { name, email, password, phone, designation, department, joiningDate, salary } = req.body;
-  if (!name || !email || !password) throw new AppError('Name, email and password are required', 400);
+  console.log('================ CREATE EMPLOYEE =================');
+  console.log('Request Body:', req.body);
+  console.log('Request User:', req.user?._id);
+  console.log('Business ID:', req.user?.businessId);
+  console.log('Uploaded File:', req.file);
 
-  const exists = await Employee.findOne({ email: email.toLowerCase() });
-  if (exists) throw new AppError('Email already registered', 409);
+  const {
+    name,
+    email,
+    password,
+    phone,
+    designation,
+    department,
+    joiningDate,
+    salary
+  } = req.body;
 
-  const employeeId = req.body.employeeId || await generateEmployeeId(req.user.businessId);
-  const idExists = await Employee.findOne({ employeeId, businessId: req.user.businessId });
-  if (idExists) throw new AppError('Employee ID already exists', 409);
+  // Required field validation
+  if (!name || !email || !password) {
+    console.log('❌ Missing required fields');
+    throw new AppError('Name, email and password are required', 400);
+  }
 
-  const data = { name, email, employeeId, passwordHash: await bcrypt.hash(password, 12), phone, designation, department, joiningDate, salary, businessId: req.user.businessId, createdBy: req.user._id };
-  if (req.file?.imageUrl) data.photo = req.file.imageUrl;
+  // Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    console.log('❌ Invalid email:', email);
+    throw new AppError('Invalid email format', 400);
+  }
+
+  // Password validation
+  if (password.length < 6) {
+    console.log('❌ Password too short');
+    throw new AppError('Password must be at least 6 characters', 400);
+  }
+
+  console.log('🔍 Checking existing email...');
+  const exists = await Employee.findOne({
+    email: email.toLowerCase()
+  });
+
+  if (exists) {
+    console.log('❌ Email already exists:', email);
+    throw new AppError('Email already registered', 409);
+  }
+
+  console.log('🔍 Generating Employee ID...');
+  const employeeId =
+    req.body.employeeId ||
+    await generateEmployeeId(req.user.businessId);
+
+  console.log('Generated Employee ID:', employeeId);
+
+  console.log('🔍 Checking Employee ID uniqueness...');
+  const idExists = await Employee.findOne({
+    employeeId,
+    businessId: req.user.businessId
+  });
+
+  if (idExists) {
+    console.log('❌ Employee ID already exists:', employeeId);
+    throw new AppError('Employee ID already exists', 409);
+  }
+
+  console.log('🔐 Hashing password...');
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const data = {
+    name: name.trim(),
+    email: email.toLowerCase().trim(),
+    employeeId,
+    passwordHash,
+    phone,
+    designation,
+    department,
+    joiningDate,
+    salary,
+    businessId: req.user.businessId,
+    createdBy: req.user._id
+  };
+
+  if (req.file?.imageUrl) {
+    console.log('📷 Employee photo found');
+    data.photo = req.file.imageUrl;
+  }
+
+  console.log('📝 Employee data before save:', data);
 
   const emp = await Employee.create(data);
-  const { passwordHash, ...safe } = emp.toObject();
-  res.status(201).json(safe);
+
+  console.log('✅ Employee created successfully');
+  console.log('Employee ID:', emp._id);
+  console.log('Employee Number:', emp.employeeId);
+
+  const { passwordHash: _, ...safe } = emp.toObject();
+
+  res.status(201).json({
+    success: true,
+    message: 'Employee created successfully',
+    data: safe
+  });
 });
 
 exports.update = asyncHandler(async (req, res) => {
