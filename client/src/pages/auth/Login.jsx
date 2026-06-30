@@ -141,7 +141,7 @@ return (
       </p>
 
       {/* Role Switch */}
-      <div
+      {/* <div
         style={{
           display: 'flex',
           gap: '6px',
@@ -179,7 +179,7 @@ return (
             {r === 'admin' ? 'Admin / Owner' : 'Employee'}
           </button>
         ))}
-      </div>
+      </div> */}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ marginBottom: '18px' }}>
@@ -203,7 +203,7 @@ return (
           />
         </div>
 
-        {role === 'employee' && (
+        {/* {role === 'employee' && (
           <div style={{ marginBottom: '18px' }}>
             <label
               style={{
@@ -223,7 +223,7 @@ return (
               placeholder="EMP0001"
             />
           </div>
-        )}
+        )} */}
 
         <div style={{ marginBottom: '18px' }}>
           <label
