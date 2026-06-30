@@ -278,7 +278,7 @@ return (
           }}
         >
           <Link to="/employee-login">New business?</Link>?{' '}
-          <Link
+          {/* <Link
             to="/register"
             style={{
               color: '#f59e0b',
@@ -287,7 +287,7 @@ return (
             }}
           >
             Register
-          </Link>
+          </Link> */}
 
           {' • '}
 
