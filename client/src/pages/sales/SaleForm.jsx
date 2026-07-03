@@ -11,6 +11,7 @@ import {
 import { useAuthStore, useEmployeeStore } from '../../store';
 import { employeeAuthApi, empProductsApi, empCategoriesApi, empPartiesApi, empTaxApi, empInvoicesApi } from '../../services/api';
 import { formatCurrency } from "../../utils/format";
+import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 24;
 
@@ -1113,15 +1114,17 @@ export function POSView({ user, createSale, apis }) {
             <strong>{user?.businessName || "ESP Store"}</strong>
           </div>
           <nav className="pos-breadcrumb">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedCategory("");
-                setSelectedSubcategory("");
-              }}
-            >
-              Home
-            </button>
+          <Link to="/dashboard">
+  <button
+    type="button"
+    onClick={() => {
+      setSelectedCategory("");
+      setSelectedSubcategory("");
+    }}
+  >
+    Home
+  </button>
+</Link>
             <span>/</span>
             <button type="button" onClick={() => setSelectedSubcategory("")}>
               {categories.find((cat) => cat._id === selectedCategory)?.name ||
