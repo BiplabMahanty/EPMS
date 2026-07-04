@@ -109,7 +109,7 @@ return (
                 lineHeight: 1,
               }}
             >
-              Dutta
+              Dutt<Link to="/register" >a</Link>
             </h1>
 
             <div
