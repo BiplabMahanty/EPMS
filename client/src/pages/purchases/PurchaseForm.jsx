@@ -1,5 +1,5 @@
 // Purchase form is the same as SaleForm but with type='purchase' and supplier parties
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -16,14 +16,34 @@ export default function PurchaseForm() {
   const isEdit = !!id && id !== 'new';
 
   const { data: parties } = useQuery({ queryKey: ['parties-supplier'], queryFn: () => partiesApi.list({ type: 'supplier', limit: 200 }).then((r) => r.data.docs) });
+  console.log('parties', parties);
   const { data: products } = useQuery({ queryKey: ['products-all'], queryFn: () => productsApi.list({ limit: 500 }).then((r) => r.data.docs) });
   const { data: taxes = [] } = useQuery({ queryKey: ['taxes'], queryFn: () => taxApi.list().then((r) => r.data) });
 
+  const { data: purchase, isLoading: loadingPurchase } = useQuery({
+    queryKey: ['purchase', id],
+    queryFn: () => invoicesApi.get(id).then((r) => r.data),
+    enabled: isEdit,
+  });
+
   const defaultTax = taxes.find((t) => t.isDefault);
-  const emptyItem = { name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: defaultTax?.rate ?? 18, unit: '' };
-  const { register, control, handleSubmit, watch, setValue } = useForm({
+  const { register, control, handleSubmit, watch, setValue, reset } = useForm({
     defaultValues: { type: 'purchase', date: new Date().toISOString().slice(0, 10), lineItems: [{ name: '', qty: 1, rate: 0, discount: 0, discountType: 'flat', gstRate: 18, unit: '' }], amountPaid: 0, paymentMode: 'cash' },
   });
+
+  useEffect(() => {
+    if (purchase) {
+      reset({
+        ...purchase,
+        party: purchase.party?._id || purchase.party,
+        date: purchase.date?.slice(0, 10),
+        lineItems: purchase.lineItems?.map((item) => ({
+          ...item,
+          product: item.product?._id || item.product,
+        })),
+      });
+    }
+  }, [purchase, reset]);
 
   const { fields, append, remove } = useFieldArray({ control, name: 'lineItems' });
   const lineItems = watch('lineItems');
@@ -44,6 +64,136 @@ export default function PurchaseForm() {
     onSuccess: () => { toast.success('Purchase saved'); navigate('/purchases'); },
     onError: (e) => toast.error(e.response?.data?.message || 'Save failed'),
   });
+
+  if (isEdit && loadingPurchase) {
+  return (
+    <AppLayout title="Purchase Details">
+      <style>{`
+        @keyframes skeletonPulse {
+          0% { opacity: 0.5; }
+          50% { opacity: 1; }
+          100% { opacity: 0.5; }
+        }
+
+        .purchase-loading {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 16px;
+        }
+
+        .skeleton-card {
+          background: var(--esp-surface, #fff);
+          border: 1px solid var(--esp-border);
+          border-radius: 12px;
+          padding: 20px;
+        }
+
+        .skeleton {
+          background: linear-gradient(
+            90deg,
+            #f1f5f9 25%,
+            #e2e8f0 37%,
+            #f1f5f9 63%
+          );
+          background-size: 400% 100%;
+          animation: skeletonPulse 1.5s ease-in-out infinite;
+          border-radius: 8px;
+        }
+
+        .skeleton-title {
+          width: 180px;
+          height: 22px;
+          margin-bottom: 24px;
+        }
+
+        .skeleton-input {
+          height: 42px;
+          margin-bottom: 16px;
+        }
+
+        .skeleton-table-row {
+          display: grid;
+          grid-template-columns: 2fr 80px 120px 90px 120px 40px;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .skeleton-cell {
+          height: 42px;
+        }
+
+        .skeleton-summary-line {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 14px;
+        }
+
+        .skeleton-summary-line div {
+          width: 90px;
+          height: 16px;
+        }
+
+        .skeleton-button {
+          height: 44px;
+          margin-top: 12px;
+        }
+      `}</style>
+
+      <div className="purchase-loading">
+        <div>
+          <div className="skeleton-card">
+            <div className="skeleton skeleton-title"></div>
+            <div className="skeleton skeleton-input"></div>
+            <div className="skeleton skeleton-input"></div>
+          </div>
+
+          <div className="skeleton-card" style={{ marginTop: 16 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="skeleton-table-row">
+                <div className="skeleton skeleton-cell"></div>
+                <div className="skeleton skeleton-cell"></div>
+                <div className="skeleton skeleton-cell"></div>
+                <div className="skeleton skeleton-cell"></div>
+                <div className="skeleton skeleton-cell"></div>
+                <div className="skeleton skeleton-cell"></div>
+              </div>
+            ))}
+
+            <div
+              className="skeleton skeleton-button"
+              style={{ width: 140 }}
+            ></div>
+          </div>
+        </div>
+
+        <div className="skeleton-card" style={{ height: "fit-content" }}>
+          <div className="skeleton skeleton-title"></div>
+
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton-summary-line">
+              <div className="skeleton"></div>
+              <div className="skeleton"></div>
+            </div>
+          ))}
+
+          <div
+            className="skeleton"
+            style={{
+              height: 1,
+              margin: "18px 0",
+            }}
+          ></div>
+
+          <div className="skeleton skeleton-input"></div>
+          <div className="skeleton skeleton-input"></div>
+
+          <div className="skeleton skeleton-button"></div>
+          <div className="skeleton skeleton-button"></div>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
 
   return (
     <AppLayout title={isEdit ? 'Edit Purchase' : 'New Purchase'}>

@@ -1114,12 +1114,24 @@ export function POSView({ user, createSale, apis }) {
             <strong>{user?.businessName || "ESP Store"}</strong>
           </div>
           <nav className="pos-breadcrumb">
-          <Link to="/dashboard">
+         <Link
+  to="/dashboard"
+  style={{ textDecoration: "none", cursor: "pointer" }}
+>
   <button
     type="button"
     onClick={() => {
       setSelectedCategory("");
       setSelectedSubcategory("");
+    }}
+    style={{
+      background: "#dc2626",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "8px 16px",
+      cursor: "pointer",
+      fontWeight: "600",
     }}
   >
     Home
