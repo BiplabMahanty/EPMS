@@ -9,6 +9,7 @@ export const setEmployeeAccessToken = (token) => { employeeAccessToken = token; 
 
 const BASE = (import.meta.env.VITE_BACKEND_URL || '').replace(/\/$/, '');
 const api = axios.create({ baseURL: `${BASE}/api`, withCredentials: true });
+console.log('API base URL:', `${BASE}/api`); // Log the API base URL for debugging
 export const empApi = axios.create({ baseURL: `${BASE}/api`, withCredentials: true });
 
 api.interceptors.request.use((config) => {
